@@ -28,7 +28,7 @@ jobs:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Test frontend
-        run: (cd gfa-frontend && npm run test)
+        run: (cd gfa-frontend && npm install && npm run test)
 
   build:
     name: Build
