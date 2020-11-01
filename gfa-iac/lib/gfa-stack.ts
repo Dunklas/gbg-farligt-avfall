@@ -3,6 +3,7 @@ import { Table, AttributeType, BillingMode } from '@aws-cdk/aws-dynamodb';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { IngestionStack } from './gfa-ingestion-stack';
 import { ApiStack } from './gfa-api-stack';
+import { WebStack } from './gfa-web-stack';
 
 interface GbgFarligtAvfallStackProps extends StackProps {
   artifactsBucketName: string,
@@ -37,5 +38,7 @@ export class GbgFarligtAvfallStack extends Stack {
       stopsBucket: stopsBucket,
       stopsPath: stopsS3Path,
     });
+
+    const webStack = new WebStack(this, 'gfa-web-stack');
   }
 }
