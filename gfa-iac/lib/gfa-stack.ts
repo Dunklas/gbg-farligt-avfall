@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
 import { Table, AttributeType, BillingMode } from '@aws-cdk/aws-dynamodb';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { IngestionStack } from './gfa-ingestion-stack';
@@ -40,5 +40,12 @@ export class GbgFarligtAvfallStack extends Stack {
     });
 
     const webStack = new WebStack(this, 'gfa-web-stack');
+
+    new CfnOutput(this, 'WebBucket', {
+      value: webStack.webHostingBucket.bucketName,
+    });
+    new CfnOutput(this, 'ApiUrl', {
+      value: apiStack.api.url,
+    });
   }
 }
