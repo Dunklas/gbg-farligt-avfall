@@ -13,6 +13,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
       - name: Unit tests
         run: (cd gfa-backend && cargo test --release)
 
@@ -28,7 +33,6 @@ jobs:
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
 
       - name: Test frontend
-        uses: actions/setup-node@v1
         run: (cd gfa-frontend && npm install && npm run test)
 
   build:
