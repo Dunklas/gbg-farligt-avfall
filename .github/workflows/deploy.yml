@@ -34,7 +34,8 @@ jobs:
           actions_comment: false
 
       - name: Install Preact CLI
-        run: sudo npm i -g preact-cli
+        uses: actions/setup-node@v1
+        run: npm i -g preact-cli
       
       - name: Obtain API url
         run: |
@@ -49,6 +50,7 @@ jobs:
         id: web_hosting
 
       - name: Build frontend
+        uses: actions/setup-node@v1
         run: (cd gfa-frontend && API_URL=${{ steps.api_endpoint.outputs.url }} npm run build)
 
       - name: Deploy frontend
