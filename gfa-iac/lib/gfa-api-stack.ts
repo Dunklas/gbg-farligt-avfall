@@ -99,6 +99,7 @@ export class ApiStack extends NestedStack {
                 {
                     statusCode: '200',
                     responseParameters: {
+                        'method.response.header.Content-Type': true,
                         'method.response.header.Access-Control-Allow-Origin': true,
                         'method.response.header.Access-Control-Allow-Methods': true,
                         'method.response.header.Access-Control-Allow-Headers': true,
@@ -109,6 +110,7 @@ export class ApiStack extends NestedStack {
                 }, {
                     statusCode: '400',
                     responseParameters: {
+                        'method.response.header.Content-Type': true,
                         'method.response.header.Access-Control-Allow-Origin': true,
                         'method.response.header.Access-Control-Allow-Methods': true,
                         'method.response.header.Access-Control-Allow-Headers': true,
