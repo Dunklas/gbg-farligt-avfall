@@ -32,7 +32,7 @@ export class ApiStack extends NestedStack {
             handler: getStops,
             proxy: false,
             defaultCorsPreflightOptions: {
-                allowOrigins: ['http://0.0.0.0:8080'],
+                allowOrigins: [ props.webOrigin, 'http://0.0.0.0:8080'],
                 allowMethods: [ 'GET' ],
             },
         });
