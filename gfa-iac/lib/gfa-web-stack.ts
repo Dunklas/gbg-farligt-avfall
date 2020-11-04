@@ -6,7 +6,6 @@ import { CloudFrontWebDistribution, HttpVersion, OriginAccessIdentity, PriceClas
 export class WebStack extends NestedStack {
 
     public readonly webUrl: string;
-    public readonly webOrigin: string;
     public readonly webHostingBucketName: string;
 
     constructor(scope: Construct, id: string, props?: NestedStackProps) {
@@ -37,6 +36,5 @@ export class WebStack extends NestedStack {
             defaultRootObject: 'index.html',
         });
         this.webUrl = distribution.distributionDomainName;
-        this.webOrigin = distribution.distributionDomainName;
     }
 }
