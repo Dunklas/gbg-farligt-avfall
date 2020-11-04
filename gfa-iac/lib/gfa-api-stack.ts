@@ -1,7 +1,7 @@
 import { NestedStack, NestedStackProps } from '@aws-cdk/aws-cloudformation';
 import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct } from '@aws-cdk/core';
-import { Cors, LambdaIntegration, LambdaRestApi, PassthroughBehavior, RestApi } from '@aws-cdk/aws-apigateway';
+import { Cors, LambdaIntegration, LambdaRestApi, PassthroughBehavior, RestApi, JsonSchemaType, JsonSchemaVersion } from '@aws-cdk/aws-apigateway';
 import { functionCreator } from './function-creator';
 
 interface ApiStackProps extends NestedStackProps {
@@ -68,5 +68,32 @@ export class ApiStack extends NestedStack {
                 },
             ],
         }));
+        const responseModel = this.api.addModel('ResponseModel', {
+            contentType: 'application/json',
+            modelName: 'ResponseModel',
+            schema: {
+                schema: JsonSchemaVersion.DRAFT4,
+                title: 'stopsResponse',
+                type: JsonSchemaType.OBJECT,
+                properties: {
+                    state: { type: JsonSchemaType.STRING },
+                    stops: { type: JsonSchemaType.ARRAY }
+                }
+            }
+        });
+
+        const errorResponseModel = this.api.addModel('ErrorResponseModel', {
+            contentType: 'application/json',
+            modelName: 'ErrorResponseModel',
+            schema: {
+                schema: JsonSchemaVersion.DRAFT4,
+                title: 'errorResponse',
+                type: JsonSchemaType.OBJECT,
+                properties: {
+                    state: { type: JsonSchemaType.STRING },
+                    message: { type: JsonSchemaType.STRING }
+                }
+            }
+        });
     }
 }
