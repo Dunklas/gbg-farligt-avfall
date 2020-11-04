@@ -35,6 +35,33 @@ export class ApiStack extends NestedStack {
                 allowHeaders: ['Content-Type', 'Accept'],
             },
         });
+
+        const responseModel = this.api.addModel('ResponseModel', {
+            contentType: 'application/json',
+            schema: {
+                schema: JsonSchemaVersion.DRAFT4,
+                title: 'stopsResponse',
+                type: JsonSchemaType.OBJECT,
+                properties: {
+                    state: { type: JsonSchemaType.STRING },
+                    stops: { type: JsonSchemaType.ARRAY }
+                }
+            }
+        });
+
+        const errorResponseModel = this.api.addModel('ErrorResponseModel', {
+            contentType: 'application/json',
+            schema: {
+                schema: JsonSchemaVersion.DRAFT4,
+                title: 'errorResponse',
+                type: JsonSchemaType.OBJECT,
+                properties: {
+                    state: { type: JsonSchemaType.STRING },
+                    message: { type: JsonSchemaType.STRING }
+                }
+            }
+        });
+
         const resource = this.api.root.addResource('stops');
         resource.addMethod('GET', new LambdaIntegration(getStops, {
             proxy: false,
@@ -67,33 +94,30 @@ export class ApiStack extends NestedStack {
                     },
                 },
             ],
-        }));
-        const responseModel = this.api.addModel('ResponseModel', {
-            contentType: 'application/json',
-            modelName: 'ResponseModel',
-            schema: {
-                schema: JsonSchemaVersion.DRAFT4,
-                title: 'stopsResponse',
-                type: JsonSchemaType.OBJECT,
-                properties: {
-                    state: { type: JsonSchemaType.STRING },
-                    stops: { type: JsonSchemaType.ARRAY }
-                }
-            }
-        });
-
-        const errorResponseModel = this.api.addModel('ErrorResponseModel', {
-            contentType: 'application/json',
-            modelName: 'ErrorResponseModel',
-            schema: {
-                schema: JsonSchemaVersion.DRAFT4,
-                title: 'errorResponse',
-                type: JsonSchemaType.OBJECT,
-                properties: {
-                    state: { type: JsonSchemaType.STRING },
-                    message: { type: JsonSchemaType.STRING }
-                }
-            }
+        }), {
+            methodResponses: [
+                {
+                    statusCode: '200',
+                    responseParameters: {
+                        'method.response.header.Access-Control-Allow-Origin': true,
+                        'method.response.header.Access-Control-Allow-Methods': true,
+                        'method.response.header.Access-Control-Allow-Headers': true,
+                    },
+                    responseModels: {
+                        'application/json': responseModel,
+                    },
+                }, {
+                    statusCode: '400',
+                    responseParameters: {
+                        'method.response.header.Access-Control-Allow-Origin': true,
+                        'method.response.header.Access-Control-Allow-Methods': true,
+                        'method.response.header.Access-Control-Allow-Headers': true,
+                    },
+                    responseModels: {
+                        'application/json': errorResponseModel,
+                    },
+                },
+            ],
         });
     }
 }
