@@ -23,7 +23,8 @@ module.exports = {
     },
     rules: {
         "react/no-unknown-property": ["error", { ignore: ["class"] }],
-        "react/prop-types": "off"
+        "react/prop-types": "off",
+        "@typescript-eslint/interface-name-prefix": "off"
     },
     settings: {
         react: {

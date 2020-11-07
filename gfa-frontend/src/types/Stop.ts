@@ -6,4 +6,4 @@ export type Stop = {
   district: string;
   description: string;
   coordinate?: Coordinate;
-}
+};
