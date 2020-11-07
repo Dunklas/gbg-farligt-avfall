@@ -29,7 +29,7 @@ const Home: FunctionalComponent = () => {
       </div>
       <div>
         <p>
-          Coordinates for each location are powered by
+          Coordinates for each location are powered by {}
           <a href="http://www.mapquest.com">MapQuest</a>
         </p>
       </div>
