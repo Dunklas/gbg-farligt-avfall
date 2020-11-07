@@ -7,7 +7,7 @@ const App: FunctionalComponent<{}> = () => {
   return (
     <div id="app">
       <Router>
-        <Route path="/stop/{id}" component={Stop} />
+        <Route path="/stop/:id" component={Stop} />
         <Route path="/" default component={List} />
       </Router>
     </div>

@@ -1,7 +1,11 @@
 import { FunctionalComponent, h } from 'preact';
 
-const Stop: FunctionalComponent<{}> = () => {
-  return <div></div>;
+interface StopProps {
+  id: string;
+}
+
+const Stop: FunctionalComponent<StopProps> = ({ id }) => {
+  return <div>{id}</div>;
 };
 
 export default Stop;
