@@ -1,25 +1,12 @@
 import { FunctionalComponent, h } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
-import { Stop } from '../../types/Stop';
 import { StopListItem } from '../../components/stop-list-item';
-import { ApiClient } from '../../api/apiClient';
+import { StopsContext } from '../../components/app';
+import { Stop } from '../../types/Stop';
 import * as style from './style.css';
+import { useContext } from 'preact/hooks';
 
 const List: FunctionalComponent<{}> = () => {
-  const [stops, setStops] = useState<Stop[]>([]);
-  useEffect(() => {
-    const apiClient = new ApiClient(API_URL);
-    apiClient
-      .getStops()
-      .then(stops => {
-        setStops(stops);
-      })
-      .catch(err => {
-        console.log('I am error');
-        console.error(err);
-      });
-  }, []);
-
+  const stops = useContext(StopsContext);
   return (
     <div className={style.home}>
       <div>
