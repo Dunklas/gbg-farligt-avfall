@@ -10,7 +10,7 @@ export default {
      * @param {WebpackConfigHelpers} helpers - object with useful helpers for working with the webpack config.
      * @param {object} options - this is mainly relevant for plugins (will always be empty in the config), default to an empty object
      **/
-    webpack(config, env, helpers, options) {
+    webpack(config, env, helpers) {
         config.module.rules[4].use.splice(1, 0, {
             loader: "@teamsupercell/typings-for-css-modules-loader",
             options: {
@@ -29,7 +29,7 @@ export default {
 
         const { plugin } = helpers.getPluginsByName(config, 'DefinePlugin')[0];
         Object.assign(plugin.definitions, {
-          API_URL: process.env.API_URL,
+          API_URL: JSON.stringify(process.env.API_URL),
         });
     }
 };
