@@ -27,7 +27,7 @@ const App: FunctionalComponent<{}> = () => {
       <StopsContext.Provider value={stops}>
         <Router>
           <Route path="/stop/:id" component={Stop} />
-          <Route path="/" component={List} />
+          <Route path="/" component={List} default />
         </Router>
       </StopsContext.Provider>
     </div>
