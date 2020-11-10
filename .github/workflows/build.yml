@@ -22,7 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Test build
-        run: (cd gfa-iac && npm run build) 
+        run: (cd gfa-iac && npm ci && npm run build) 
       - name: Synthesize CDK
         uses: youyo/aws-cdk-github-actions@v1
         with:
