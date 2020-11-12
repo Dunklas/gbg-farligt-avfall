@@ -48,13 +48,12 @@ export class ApiStack extends NestedStack {
 
         if (props.hostedZoneId && props.domainName) {
             const apiDomainName = `gfa-api.${props.domainName}`;
-            HostedZone.fromHostedZoneAttributes(this, 'e-hostedzone', {
+            const hostedZone = HostedZone.fromHostedZoneAttributes(this, 'e-hostedzone', {
                 hostedZoneId: props.hostedZoneId,
                 zoneName: props.domainName,
             });
-            const hostedZone = HostedZone.fromHostedZoneId(this, 'external-hostedzone', props.hostedZoneId);
             const apiCert = new Certificate(this, 'gfa-api-certificate', {
-                domainName: `gfa-api.${props.domainName}`,
+                domainName: apiDomainName,
                 validation: CertificateValidation.fromDns(hostedZone),
             });
             this.api.addDomainName('gfa-api-domain', {
