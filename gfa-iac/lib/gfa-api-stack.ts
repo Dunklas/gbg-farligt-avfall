@@ -66,9 +66,6 @@ export class ApiStack extends NestedStack {
                 target: RecordTarget.fromAlias(new targets.ApiGateway(this.api)),
                 recordName: apiDomainName,
             });
-            this.api.domainName?.addBasePathMapping(this.api, {
-                basePath: 'stops'
-            })
         }
     }
 }
