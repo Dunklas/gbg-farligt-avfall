@@ -28,14 +28,31 @@ pub async fn get_by_date(table: String, region: Region, date: String) -> Result<
         s: Some(date),
         ..Default::default()
     });
-    let query_input = QueryInput{
-        expression_attribute_values: Some(attribute_values),
-        key_condition_expression: Some("event-date = :date".to_string()),
-        table_name: table,
-        ..Default::default()
-    };
-    let result = client.query(query_input).await?;
-    Ok(Vec::new())
+    let events: Vec<PickUpEvent> = client
+        .query(QueryInput{
+            table_name: table,
+            expression_attribute_values: Some(attribute_values),
+            key_condition_expression: Some("event-date = :date".to_string()),
+            ..Default::default()
+        })
+        .await?
+        .items
+        .unwrap_or_else(|| vec![])
+        .into_iter()
+        .map(|item| {
+            PickUpEvent::new(
+                item.get("street").unwrap().s.as_ref().unwrap().clone(),
+                item.get("district").unwrap().s.as_ref().unwrap().clone(),
+                match item.get("description") {
+                    Some(description) => Some(description.s.as_ref().unwrap().clone()),
+                    None => None,
+                },
+                item.get("start_time").unwrap().s.as_ref().unwrap().clone(),
+                item.get("end_time").unwrap().s.as_ref().unwrap().clone(),
+            ).unwrap()
+        })
+        .collect();
+    Ok(events)
 }
 
 pub async fn store(table: String, region: Region, events: Vec::<PickUpEvent>) -> Result<usize, Box<dyn std::error::Error + Send + Sync + 'static>> {
