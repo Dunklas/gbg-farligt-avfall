@@ -25,7 +25,7 @@ async fn handle_request(_event: Value, _: Context) -> Result<ApiGatewayProxyResp
 fn create_response(body: String) -> ApiGatewayProxyResponse {
     let mut headers: HashMap<String, String> = HashMap::new();
     headers.insert("Access-Control-Allow-Headers".to_string(), "Content-Type,Accept".to_string());
-    headers.insert("Access-Control-Allow-Methods".to_string(), "GET".to_string());
+    headers.insert("Access-Control-Allow-Methods".to_string(), "PUT".to_string());
     headers.insert("Access-Control-Allow-Origin".to_string(), "*".to_string());
     return ApiGatewayProxyResponse{
         status_code: 200,
