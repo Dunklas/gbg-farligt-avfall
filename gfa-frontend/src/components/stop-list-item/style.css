@@ -1,16 +1,24 @@
 .stop {
   height: 64px;
   margin-top: 16px;
-  padding: 16px;
-}
-
-.stop:hover {
-  cursor: pointer;
+  padding: 2px 16px;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .stop .title {
   height: 28px;
   font-size: 1rem;
+  color: gray;
+}
+.stop .title span:hover {
+  cursor: pointer;
+  color: dimgray;
+  text-decoration: underline;
 }
 
 .stop .subtitle {

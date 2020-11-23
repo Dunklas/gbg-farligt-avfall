@@ -8,7 +8,7 @@ import { useContext } from 'preact/hooks';
 const List: FunctionalComponent<{}> = () => {
   const stops = useContext(StopsContext);
   return (
-    <div className={style.home}>
+    <div className={style.main}>
       <div>
         {stops.map(stop => (
           <StopListItem stop={stop} key={stop.location_id} />
