@@ -12,16 +12,15 @@ export const StopListItem: FunctionalComponent<StopListItemProps> = ({
 }) => {
   return (
     <div className={style.stop}>
-      <div className={style.title}>
-        <span
-          onClick={() => {
-            route(`/stop/${stop.location_id}`);
-          }}
-        >
-          {stop.street}
-        </span>
-      </div>
-      <div className={style.subtitle}>{stop.district}</div>
+      <div className={style.title}>{stop.street}</div>
+      {stop.description && (
+        <div className={style.subtitle}>
+          {stop.district} ({stop.description})
+        </div>
+      )}
+      {!stop.description && (
+        <div className={style.subtitle}>{stop.district}</div>
+      )}
     </div>
   );
 };

@@ -13,12 +13,6 @@
 .stop .title {
   height: 28px;
   font-size: 1rem;
-  color: gray;
-}
-.stop .title span:hover {
-  cursor: pointer;
-  color: dimgray;
-  text-decoration: underline;
 }
 
 .stop .subtitle {
