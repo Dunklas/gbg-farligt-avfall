@@ -6,3 +6,7 @@
   justify-content: center;
   align-items: center;
 }
+
+.main div {
+  padding: 0px 4px;
+}

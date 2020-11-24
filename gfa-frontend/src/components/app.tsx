@@ -4,7 +4,6 @@ import { Route, Router } from 'preact-router';
 import { ApiClient } from '../api/apiClient';
 import { Stop as StopType } from '../types/Stop';
 import List from '../routes/list';
-import Stop from '../routes/stop';
 
 export const StopsContext = createContext<StopType[]>([]);
 
