@@ -7,7 +7,6 @@ import * as style from './style.css';
 import { useContext, useState } from 'preact/hooks';
 
 const List: FunctionalComponent<{}> = () => {
-
   const stops = useContext(StopsContext);
 
   const [showSubscribe, setShowSubscribe] = useState<boolean>(false);
@@ -16,12 +15,12 @@ const List: FunctionalComponent<{}> = () => {
   const onSubscribe = (stop: Stop): void => {
     setStopToSubscribeTo(stop);
     setShowSubscribe(true);
-  }
+  };
 
   const onCloseSubscribeModal = (): void => {
     setShowSubscribe(false);
     setStopToSubscribeTo(null);
-  }
+  };
 
   return (
     <div className={style.main}>
@@ -41,17 +40,28 @@ const List: FunctionalComponent<{}> = () => {
         </p>
       </div>
       <Modal isOpen={showSubscribe} onClickBackdrop={onCloseSubscribeModal}>
-        {stopToSubscribeTo && <div className={style.modal}>
-          <p>You&apos;re about to subscribe to e-mail notifications for <strong>{stopToSubscribeTo.street}</strong>.</p>
-          <p>By subscribing you consent to that we will store your e-mail address and yada yada</p>
-          <form className={style.form}>
-            <label for="email">
-              E-mail
-              <input id="email" type="email" name="email" required />
-            </label>
-            <button>Subscribe!</button>
-          </form>
-        </div>}
+        {stopToSubscribeTo && (
+          <div className={style.modal}>
+            <p>
+              You&apos;re about to subscribe to e-mail notifications for{' '}
+              <strong>{stopToSubscribeTo.street}</strong>.
+            </p>
+            <p>
+              By subscribing you consent to that we will store your e-mail
+              address and yada yada
+            </p>
+            <form className={style.form}>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="E.g. example@email.com"
+                required
+              />
+              <button>Subscribe!</button>
+            </form>
+          </div>
+        )}
       </Modal>
     </div>
   );
