@@ -18,6 +18,10 @@
   color: white;
   background-color: #234b9a;
 }
+.form button:hover {
+  cursor: pointer;
+}
+
 .form input {
   width: 100%;
   height: 55px;

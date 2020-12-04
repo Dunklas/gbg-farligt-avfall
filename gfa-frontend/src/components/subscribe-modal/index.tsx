@@ -2,14 +2,25 @@ import { FunctionalComponent, h } from 'preact';
 import * as style from './style.css';
 import { useState } from 'preact/hooks';
 import { Stop } from '../../types/Stop';
+import { ApiClient } from '../../api/apiClient';
 import { Modal } from '../../components/modal';
 
 interface SubscribeModalProps {
   stop: Stop;
   onClose: () => void;
 }
+
 export const SubscribeModal: FunctionalComponent<SubscribeModalProps> = props => {
-  const [email, setEmail] = useState<string | null>(null);
+  const [email, setEmail] = useState<string>('');
+  const apiClient = new ApiClient(API_URL);
+  
+  const handleSubscribe = (): void => {
+    if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
+      console.log('Invalid!!');
+    }
+    apiClient.subscribe(email, props.stop.location_id);
+  }
+
   if (!props.stop) {
     return <div></div>;
   }
@@ -30,11 +41,16 @@ export const SubscribeModal: FunctionalComponent<SubscribeModalProps> = props =>
             type="email"
             name="email"
             placeholder="E.g. example@email.com"
+            value={email}
             required
+            onInput={(event): void => {
+              setEmail((event.target as HTMLInputElement).value);
+            }}
           />
           <button
-            onClick={() => {
-              console.log('Submit!');
+            onClick={(event): void => {
+              event.preventDefault();
+              handleSubscribe();
             }}
           >
             Subscribe!
