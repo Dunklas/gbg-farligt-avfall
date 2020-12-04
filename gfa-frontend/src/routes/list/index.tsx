@@ -2,7 +2,7 @@ import { FunctionalComponent, h } from 'preact';
 import { Stop } from '../../types/Stop';
 import { StopListItem } from '../../components/stop-list-item';
 import { StopsContext } from '../../components/app';
-import { Modal } from '../../components/modal';
+import { SubscribeModal } from '../../components/subscribe-modal';
 import * as style from './style.css';
 import { useContext, useState } from 'preact/hooks';
 
@@ -39,30 +39,12 @@ const List: FunctionalComponent<{}> = () => {
           <a href="http://www.mapquest.com">MapQuest</a>
         </p>
       </div>
-      <Modal isOpen={showSubscribe} onClickBackdrop={onCloseSubscribeModal}>
-        {stopToSubscribeTo && (
-          <div className={style.modal}>
-            <p>
-              You&apos;re about to subscribe to e-mail notifications for{' '}
-              <strong>{stopToSubscribeTo.street}</strong>.
-            </p>
-            <p>
-              By subscribing you consent to that we will store your e-mail
-              address and yada yada
-            </p>
-            <form className={style.form}>
-              <input
-                id="email"
-                type="email"
-                name="email"
-                placeholder="E.g. example@email.com"
-                required
-              />
-              <button>Subscribe!</button>
-            </form>
-          </div>
-        )}
-      </Modal>
+      {showSubscribe && stopToSubscribeTo && (
+        <SubscribeModal
+          stop={stopToSubscribeTo}
+          onClose={onCloseSubscribeModal}
+        />
+      )}
     </div>
   );
 };
