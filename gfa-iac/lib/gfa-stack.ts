@@ -44,6 +44,7 @@ export class GbgFarligtAvfallStack extends Stack {
       stopsBucket: stopsBucket,
       stopsPath: stopsS3Path,
       eventsTable: eventsDb,
+      alertTopic,
     });
 
 
