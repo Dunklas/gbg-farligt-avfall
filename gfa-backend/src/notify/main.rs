@@ -28,6 +28,7 @@ async fn handle_request(_event: Value, _: Context) -> Result<Value, Error> {
     let region = Region::from_str(&region).unwrap(); 
 
     let todays_date = Utc::today().format("%Y-%m-%d").to_string();
+    info!("Fetching events for: {}", todays_date);
     let todays_events = get_by_date(event_table, region.clone(), todays_date).await?;
     info!("About to notify for {} events", todays_events.len());
     match publish_events::publish_events(todays_events, today_topic_arn, region).await {
