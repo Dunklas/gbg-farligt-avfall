@@ -12,20 +12,27 @@ interface SubscribeModalProps {
 
 export const SubscribeModal: FunctionalComponent<SubscribeModalProps> = props => {
   const [email, setEmail] = useState<string>('');
+  const [error, setError] = useState<string>('');
+
   const apiClient = new ApiClient(API_URL);
-  
-  const handleSubscribe = (): Promise<String> => {
-    if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
-      return Promise.reject("Invalid e-mail address");
+
+  const handleSubscribe = (): Promise<string> => {
+    if (
+      !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+        email
+      )
+    ) {
+      return Promise.reject('Invalid e-mail address');
     }
-    return apiClient.subscribe(email, props.stop.location_id)
+    return apiClient
+      .subscribe(email, props.stop.location_id)
       .then(() => {
-        return Promise.resolve("OK");
+        return Promise.resolve('OK');
       })
       .catch(e => {
-        return Promise.reject(e);
+        return Promise.reject('Failed to subscribe');
       });
-  }
+  };
 
   if (!props.stop) {
     return <div></div>;
@@ -53,12 +60,16 @@ export const SubscribeModal: FunctionalComponent<SubscribeModalProps> = props =>
               setEmail((event.target as HTMLInputElement).value);
             }}
           />
+          {error && <div className={style.error}>{error}</div>}
           <button
             onClick={(event): void => {
               event.preventDefault();
               handleSubscribe()
                 .then(() => {
                   props.onClose();
+                })
+                .catch(error => {
+                  setError(error);
                 });
             }}
           >
