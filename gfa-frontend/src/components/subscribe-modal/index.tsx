@@ -14,11 +14,17 @@ export const SubscribeModal: FunctionalComponent<SubscribeModalProps> = props =>
   const [email, setEmail] = useState<string>('');
   const apiClient = new ApiClient(API_URL);
   
-  const handleSubscribe = (): void => {
+  const handleSubscribe = (): Promise<String> => {
     if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
-      console.log('Invalid!!');
+      return Promise.reject("Invalid e-mail address");
     }
-    apiClient.subscribe(email, props.stop.location_id);
+    return apiClient.subscribe(email, props.stop.location_id)
+      .then(() => {
+        return Promise.resolve("OK");
+      })
+      .catch(e => {
+        return Promise.reject(e);
+      });
   }
 
   if (!props.stop) {
@@ -50,7 +56,10 @@ export const SubscribeModal: FunctionalComponent<SubscribeModalProps> = props =>
           <button
             onClick={(event): void => {
               event.preventDefault();
-              handleSubscribe();
+              handleSubscribe()
+                .then(() => {
+                  props.onClose();
+                });
             }}
           >
             Subscribe!
