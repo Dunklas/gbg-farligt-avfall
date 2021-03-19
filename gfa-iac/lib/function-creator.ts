@@ -34,6 +34,5 @@ const createFunction = (artifactsBucket: IBucket, version: string, scope: Constr
         handler: 'doesnt.matter',
         timeout: props.timeout || Duration.seconds(10),
         environment: props.environment || {},
-        tracing: Tracing.ACTIVE 
     })
 }
