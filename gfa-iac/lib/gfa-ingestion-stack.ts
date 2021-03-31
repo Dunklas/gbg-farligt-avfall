@@ -10,8 +10,6 @@ import { SfnStateMachine } from '@aws-cdk/aws-events-targets';
 import { GfaFunctionWithInvokeTask } from './function/gfa-function-invoke';
 
 export interface IngestionStackProps extends NestedStackProps {
-  version: string,
-  artifactsBucket: IBucket,
   stopsBucket: IBucket,
   stopsPath: string,
   eventsTable: ITable,

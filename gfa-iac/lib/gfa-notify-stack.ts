@@ -12,8 +12,6 @@ import { LambdaEndpoint } from './gfa-api-stack';
 import { GfaFunction } from './function/gfa-function';
 
 interface NotifyStackProps extends NestedStackProps {
-    version: string,
-    artifactsBucket: IBucket,
     eventsTable: ITable,
     alertTopic: ITopic
 }

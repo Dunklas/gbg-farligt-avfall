@@ -10,8 +10,6 @@ import { NotifyStack } from './gfa-notify-stack';
 import { GfaFunction } from './function/gfa-function';
 
 interface GbgFarligtAvfallStackProps extends StackProps {
-  artifactsBucketName: string,
-  version: string,
   hostedZoneId: string,
   domainName: string,
   adminEmail: string,
@@ -21,8 +19,6 @@ export class GbgFarligtAvfallStack extends Stack {
 
   constructor(app: App, id: string, props: GbgFarligtAvfallStackProps) {
     super(app, id, props);
-
-    const artifactsBucket = Bucket.fromBucketName(this, 'artifactsBucket', props.artifactsBucketName);
 
     const eventsDb = new Table(this, 'gfa-events-db', {
       partitionKey: { name: 'event_date', type: AttributeType.STRING },
@@ -39,8 +35,6 @@ export class GbgFarligtAvfallStack extends Stack {
     }
 
     const ingestionStack = new IngestionStack(this, 'gfa-ingestion-stack', {
-      version: props.version,
-      artifactsBucket: artifactsBucket,
       stopsBucket: stopsBucket,
       stopsPath: stopsS3Path,
       eventsTable: eventsDb,
@@ -57,8 +51,6 @@ export class GbgFarligtAvfallStack extends Stack {
     stopsBucket.grantRead(getStops.handler, stopsS3Path);
 
     const notifyStack = new NotifyStack(this, 'gfa-notify-stack', {
-      version: props.version,
-      artifactsBucket: artifactsBucket,
       eventsTable: eventsDb,
       alertTopic,
     });
