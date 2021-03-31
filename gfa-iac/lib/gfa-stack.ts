@@ -7,7 +7,7 @@ import { IngestionStack } from './gfa-ingestion-stack';
 import { ApiStack } from './gfa-api-stack';
 import { WebStack } from './gfa-web-stack';
 import { NotifyStack } from './gfa-notify-stack';
-import { functionCreator } from './function-creator';
+import { GfaFunction } from './function/gfa-function';
 
 interface GbgFarligtAvfallStackProps extends StackProps {
   artifactsBucketName: string,
@@ -47,15 +47,14 @@ export class GbgFarligtAvfallStack extends Stack {
       alertTopic,
     });
 
-
-    const newFunction = functionCreator(artifactsBucket, props.version);
-    const getStops = newFunction(this, 'get-stops', {
+    const getStops = new GfaFunction(this, 'get-stops', {
+        name: 'get-stops',
         environment: {
             STOPS_BUCKET: stopsBucket.bucketName,
             STOPS_PATH: stopsS3Path,
         }
     });
-    stopsBucket.grantRead(getStops, stopsS3Path);
+    stopsBucket.grantRead(getStops.handler, stopsS3Path);
 
     const notifyStack = new NotifyStack(this, 'gfa-notify-stack', {
       version: props.version,
@@ -70,7 +69,7 @@ export class GbgFarligtAvfallStack extends Stack {
       domainName: props.domainName,
       lambdaEndpoints: [
         {
-          lambda: getStops,
+          lambda: getStops.handler,
           resource: 'stops',
           methods: ['GET']
         },
