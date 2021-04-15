@@ -63,12 +63,13 @@ export class GbgFarligtAvfallStack extends Stack {
       ]
     });
 
+    const sendgridApiKey = app.node.tryGetContext('sendgridApiKey');
     const hostedZoneId = app.node.tryGetContext('hostedZoneId');
     const domainName = app.node.tryGetContext('domainName');
     new SendGridDomainVerifier(this, 'gfa-sendgrid-verifier', {
       hostedZoneId,
       domainName,
-      apiKey: 'some-key'
+      apiKey: sendgridApiKey,
     });
 
     new CfnOutput(this, 'WebBucket', {
