@@ -5,14 +5,14 @@ const AWS = require('aws-sdk')
 const baseUrl = 'https://api.sendgrid.com/v3';
 
 exports.handler = async function (event, context) {
-    const { ResourceProperties: properties, RequestType: requestType, PhysicalResourceId: physicalId } = event;
+    const { ResourceProperties: properties, OldResourceProperties: oldProperties, RequestType: requestType, PhysicalResourceId: physicalId } = event;
     switch (requestType) {
         case 'Create':
             return handleCreate(properties.apiKey, properties.domain, properties.hostedZoneId);
         case 'Update':
-            return handleUpdate(properties.apiKey, physicalId);
+            return handleUpdate(physicalId, properties, oldProperties);
         case 'Delete':
-            return handleDelete(properties.apiKey, physicalId);
+            return handleDelete(properties.apiKey, properties.hostedZoneId, physicalId);
     }
 }
 
@@ -22,7 +22,7 @@ const handleCreate = async (apiKey, domain, hostedZoneId) => {
             throw new Error('Failed to authenticate domain: ' + error);
         })
     const {id, dns} = authenticationResponse;
-    await addAuthenticationRecords(hostedZoneId, dns)
+    await modifyAuthenticationRecords(hostedZoneId, dns, 'CREATE')
         .catch(error => {
             // Delete authentication in SendGrid?
             throw new Error('Failed to add CNAME records to Route53: ' + error);
@@ -34,12 +34,26 @@ const handleCreate = async (apiKey, domain, hostedZoneId) => {
     return successfulCloudFormationResponse(id.toString(10), {});
 }
 
-const handleUpdate = (apiKey, id) => {
-    console.log('UPDATE event');
-    throw new Error('Failed to update :(');
+const handleUpdate = (id, properties, oldProperties) => {
+    const domainChanged = properties.domain !== oldProperties.domain;
+    const hostedZoneChanged = properties.hostedZoneId !== oldProperties.hostedZoneId;
+    const apiKeyChanged = properties.apiKey !== oldProperties.apiKey;
+
+    if (!domainChanged && !hostedZoneChanged && apiKeyChanged) {
+        return successfulCloudFormationResponse(id, {});
+    }
+    return handleCreate(properties.apiKey, properties.domain, properties.hostedZoneId);
 }
 
-const handleDelete = async (apiKey, id) => {
+const handleDelete = async (apiKey, hostedZoneId, id) => {
+    const { dns } = await getDomainAuthentication(apiKey, id)
+        .catch(error => {
+            throw new Error(`Failed to get domain authentication with id ${id}: ` + error);
+        });
+    await modifyAuthenticationRecords(hostedZoneId, dns, 'DELETE')
+        .catch(error => {
+            throw new Error('Failed to delete CNAME records from Route53: ' + error);
+        });
     await deleteDomainAuthentication(apiKey, id)
         .catch(error => {
             throw new Error('Failed to delete domain authentication: ' + error);
@@ -54,13 +68,13 @@ const successfulCloudFormationResponse = (physicalResourceId, responseData) => {
     };
 }
 
-const addAuthenticationRecords = (hostedZoneId, recordsToAdd) => {
+const modifyAuthenticationRecords = (hostedZoneId, resourcesToModify, action) => {
     const route53 = new AWS.Route53();
     return route53.changeResourceRecordSets({
         HostedZoneId: hostedZoneId,
         ChangeBatch: {
-            Changes: Object.values(recordsToAdd).map(record => ({
-                Action: 'CREATE',
+            Changes: Object.values(resourcesToModify).map(record => ({
+                Action: action,
                 ResourceRecordSet: {
                     Name: record.host,
                     Type: record.type.toUpperCase(),
@@ -72,16 +86,6 @@ const addAuthenticationRecords = (hostedZoneId, recordsToAdd) => {
             }))
         }
     }).promise();
-}
-
-const getAuthenticatedDomains = (apiKey) => {
-    const uri = new url.URL(baseUrl + '/whitelabel/domains');
-    return makeRequest(uri, {
-        method: 'GET',
-        headers: {
-            Authorization: 'Bearer ' + apiKey
-        }
-    }).then(response => JSON.parse(response));
 }
 
 const createDomainAuthentication = (apiKey, domain) => {
@@ -110,6 +114,16 @@ const validateDomainAuthentication = (apiKey, id) => {
         }
         return response;
     });
+}
+
+const getDomainAuthentication = (apiKey, id) => {
+    const uri = new url.URL(baseUrl + `/whitelabel/domains/${id}`);
+    return makeRequest(uri, {
+        method: 'GET',
+        headers: {
+            Authorization: 'Bearer ' + apiKey
+        }
+    }).then(response => JSON.parse(response));
 }
 
 const deleteDomainAuthentication = (apiKey, id) => {

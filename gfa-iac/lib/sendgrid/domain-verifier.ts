@@ -10,7 +10,6 @@ export interface SendGridDomainVerifierProps {
     apiKey: string,
 }
 
-// https://baihuqian.github.io/2020-12-17-lambda-based-cdk-custom-resource-with-input-and-output/
 export class SendGridDomainVerifier extends Construct {
 
     constructor(scope: Construct, id: string, props: SendGridDomainVerifierProps) {
@@ -36,8 +35,7 @@ export class SendGridDomainVerifier extends Construct {
             onEventHandler: domainVerifier,
         });
 
-        const domain = 'myDomain';
-        const customResource = new CustomResource(this, `sendgrid-domain-verifier-${domain}`, {
+        new CustomResource(this, `sendgrid-domain-verifier-${props.domainName}`, {
             serviceToken: provider.serviceToken,
             properties: {
                 hostedZoneId: props.hostedZoneId,
