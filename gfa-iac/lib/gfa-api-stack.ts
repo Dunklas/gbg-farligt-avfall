@@ -9,7 +9,7 @@ import * as targets from '@aws-cdk/aws-route53-targets';
 export class ApiStack extends NestedStack {
 
     public readonly api: RestApi;
-    public readonly externalUrl: string;
+    public readonly externalUrl?: string;
 
     constructor(scope: Construct, id: string) {
         super(scope, id);
