@@ -24,7 +24,7 @@ export class StopsStack extends NestedStack {
 
         const getStopsIntegration = new LambdaIntegration(getStops.handler, {
             proxy: true,
-        });;;;
+        });
 
         const resource = props.api.root.addResource('stops');
         resource.addCorsPreflight({
