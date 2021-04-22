@@ -1,4 +1,4 @@
-import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Table, AttributeType, BillingMode } from '@aws-cdk/aws-dynamodb';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
@@ -20,10 +20,13 @@ export class GbgFarligtAvfallStack extends Stack {
       partitionKey: { name: 'event_date', type: AttributeType.STRING },
       sortKey: { name: 'location_id', type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
+      removalPolicy: RemovalPolicy.DESTROY
     });
 
     const stopsS3Path = 'stops.json';
-    const stopsBucket = new Bucket(this, 'stops-bucket');
+    const stopsBucket = new Bucket(this, 'stops-bucket', {
+      removalPolicy: RemovalPolicy.DESTROY
+    });
 
     const alertTopic = new Topic(this, 'admin-alert');
     const adminEmail = app.node.tryGetContext('adminEmail');
