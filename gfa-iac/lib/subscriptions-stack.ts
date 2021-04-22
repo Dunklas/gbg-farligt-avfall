@@ -12,7 +12,7 @@ export class SubscriptionStack extends NestedStack {
     constructor(scope: Construct, id: string, props: SubscriptionsStackProps) {
         super(scope, id);
 
-        const subscriptionsDb = new Table(scope, 'gfa-subscriptions-db', {
+        const subscriptionsDb = new Table(scope, 'subscriptions-db', {
             partitionKey: { name: 'email', type: AttributeType.STRING },
             sortKey: { name: 'location_id', type: AttributeType.STRING },
             billingMode: BillingMode.PAY_PER_REQUEST,
