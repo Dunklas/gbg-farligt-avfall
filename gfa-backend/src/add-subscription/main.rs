@@ -4,6 +4,7 @@ use log::{self, LevelFilter};
 use simple_logger::{SimpleLogger};
 use rusoto_core::Region;
 use aws_lambda_events::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
+use rand::{Rng, RngCore, CryptoRng, rngs::StdRng};
 use common::subscriptions_repo::{store_subscription, get_subscription};
 
 mod add_subscription_request;
@@ -51,6 +52,9 @@ async fn handle_request(event: ApiGatewayProxyRequest, _: Context) -> Result<Api
             return Ok(create_response(500, "Failed to read from database".to_owned()));
         }
     }
+    
+    let mut random_bytes: [u8; 20];
+    StdRng::new();
 
     return Ok(create_response(200, String::new()));
 }
