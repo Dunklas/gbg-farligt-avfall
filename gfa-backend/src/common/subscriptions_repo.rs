@@ -37,6 +37,12 @@ pub async fn store_subscription(table: &String, region: &Region, subscription: S
         bool: Some(subscription.is_authenticated),
         ..Default::default()
     });
+    if subscription.ttl.is_some() {
+        attributes.insert("ttl".to_owned(), AttributeValue{
+            n: Some(subscription.ttl.unwrap().to_string()),
+            ..Default::default()
+        });
+    }
 
     match client.put_item(PutItemInput{
         item: attributes,
