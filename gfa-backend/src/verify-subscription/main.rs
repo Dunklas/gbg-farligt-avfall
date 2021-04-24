@@ -30,7 +30,7 @@ fn create_response(status_code: i64, body: String) -> ApiGatewayProxyResponse {
     );
     headers.insert(
         "Access-Control-Allow-Methods".to_string(),
-        "GET".to_string(),
+        "POST".to_string(),
     );
     headers.insert("Access-Control-Allow-Origin".to_string(), "*".to_string());
     return ApiGatewayProxyResponse {
