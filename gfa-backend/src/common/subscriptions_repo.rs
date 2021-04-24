@@ -55,8 +55,19 @@ pub async fn store_subscription(table: &String, region: &Region, subscription: S
 pub async fn get_subscription(table: &String, region: &Region, email: &String, location_id: &String) -> Result<Option<Subscription>, Error>{
     let client = DynamoDbClient::new(region.clone());
 
+    let mut attributes: HashMap<String, AttributeValue> = HashMap::new();
+    attributes.insert("email".to_owned(), AttributeValue{
+        s: Some(email.clone()),
+        ..Default::default()
+    });
+    attributes.insert("location_id".to_owned(), AttributeValue{
+        s: Some(location_id.clone()),
+        ..Default::default()
+    });
+
     match client.get_item(GetItemInput{
         table_name: table.clone(),
+        key: attributes,
         ..Default::default()
     }).await {
         Ok(response) => {
