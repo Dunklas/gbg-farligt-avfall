@@ -1,6 +1,7 @@
 use std::fmt;
 use sha1::{Sha1};
 use rand::prelude::*;
+use chrono::{Duration, Utc};
 
 #[derive(fmt::Debug)]
 pub struct Subscription {
@@ -8,6 +9,7 @@ pub struct Subscription {
     pub location_id: String,
     pub auth_token: String,
     pub is_authenticated: bool,
+    pub ttl: Option<i64>
 }
 
 impl Subscription {
@@ -23,7 +25,21 @@ impl Subscription {
             email: email,
             location_id: location_id,
             auth_token: auth_token.digest().to_string(),
-            is_authenticated: false
+            is_authenticated: false,
+            ttl: Some((Utc::now() + Duration::days(1)).timestamp())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn should_create_subscription() {
+        let subscription = Subscription::new("email@email.com".to_owned(), "hisingen_nice".to_owned());
+        assert_eq!("email@email.com".to_owned(), subscription.email);
+        assert_eq!("hisingen_nice".to_owned(), subscription.location_id);
+        assert_eq!(false, subscription.is_authenticated);
     }
 }

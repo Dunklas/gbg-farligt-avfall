@@ -1,11 +1,11 @@
+use std::{collections::HashMap, env, str::FromStr};
+use log::{self, error, LevelFilter};
+use simple_logger::SimpleLogger;
+use lambda::{handler_fn, Context};
 use aws_lambda_events::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
+use rusoto_core::Region;
 use common::subscriptions_repo::{get_subscription, store_subscription};
 use common::subscription::Subscription;
-use lambda::{handler_fn, Context};
-use log::{self, error, warn, LevelFilter};
-use rusoto_core::Region;
-use simple_logger::SimpleLogger;
-use std::{collections::HashMap, env, str::FromStr};
 
 mod add_subscription_request;
 

@@ -87,10 +87,15 @@ fn item_to_subscription(item: HashMap<String, AttributeValue>) -> Option<Subscri
     let location_id = item.get("location_id")?.s.as_ref()?;
     let auth_token = item.get("auth_token")?.s.as_ref()?;
     let is_authenticated = item.get("is_authenticated")?.bool.as_ref()?;
+    let ttl = match item.get("ttl") {
+        None => None,
+        Some(ttl) => Some(ttl.n.as_ref()?.parse::<i64>().ok()?)
+    };
     Some(Subscription{
         email: email.clone(),
         location_id: location_id.clone(),
         auth_token: auth_token.clone(),
-        is_authenticated: is_authenticated.clone()
+        is_authenticated: is_authenticated.clone(),
+        ttl,
     })
 }
