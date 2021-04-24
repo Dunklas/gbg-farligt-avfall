@@ -13,7 +13,7 @@ type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    let _log = SimpleLogger::new().with_level(LevelFilter::Debug).init();
+    let _log = SimpleLogger::new().with_level(LevelFilter::Info).init();
     let handler = handler_fn(handle_request);
     lambda::run(handler).await?;
     Ok(())

@@ -1,5 +1,5 @@
 use std::{collections::HashMap};
-use log::{self, LevelFilter};
+use log::{self, info, LevelFilter};
 use simple_logger::SimpleLogger;
 use lambda::{handler_fn, Context};
 use aws_lambda_events::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
@@ -8,7 +8,7 @@ type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    let _log = SimpleLogger::new().with_level(LevelFilter::Debug).init();
+    let _log = SimpleLogger::new().with_level(LevelFilter::Info).init();
     let handler = handler_fn(handle_request);
     lambda::run(handler).await?;
     Ok(())
@@ -18,6 +18,7 @@ async fn handle_request(
     event: ApiGatewayProxyRequest,
     _: Context,
 ) -> Result<ApiGatewayProxyResponse, Error> {
+    info!("{:?}", event.path_parameters);
     Ok(create_response(200, "Hello verify!".to_owned()))
 }
 
