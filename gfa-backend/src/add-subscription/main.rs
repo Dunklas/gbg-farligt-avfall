@@ -1,8 +1,8 @@
 use aws_lambda_events::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
 use common::subscriptions_repo::{get_subscription, store_subscription};
+use common::subscription::Subscription;
 use lambda::{handler_fn, Context};
-use log::{self, LevelFilter};
-use rand::prelude::*;
+use log::{self, error, warn, LevelFilter};
 use rusoto_core::Region;
 use simple_logger::SimpleLogger;
 use std::{collections::HashMap, env, str::FromStr};
@@ -23,7 +23,7 @@ async fn handle_request(
     event: ApiGatewayProxyRequest,
     _: Context,
 ) -> Result<ApiGatewayProxyResponse, Error> {
-    let events_table = env::var("SUBSCRIPTIONS_TABLE").unwrap();
+    let subscriptions_table = env::var("SUBSCRIPTIONS_TABLE").unwrap();
     let region = env::var("AWS_REGION").unwrap();
     let region = Region::from_str(&region).unwrap();
 
@@ -41,30 +41,29 @@ async fn handle_request(
             }
         };
 
-    match get_subscription(events_table, region, request.email, request.location_id).await {
+    match get_subscription(&subscriptions_table, &region, &request.email, &request.location_id).await {
         Ok(optional_subscription) => match optional_subscription {
             Some(subscription) => {
                 if subscription.is_authenticated {
-                    return Ok(create_response(
-                        400,
-                        "Subscription already exist for this e-mail address and location"
-                            .to_owned(),
-                    ));
+                    return Ok(create_response(400, "Subscription already exist for this e-mail address and location".to_owned()));
                 }
             }
             None => {}
         },
-        Err(_error) => {
-            return Ok(create_response(
-                500,
-                "Failed to read from database".to_owned(),
-            ));
+        Err(error) => {
+            error!("Failed to read from database: {}", error);
+            return Ok(create_response(500, "Failed to read from database".to_owned()));
         }
     }
-    let mut random_bytes = [0u8; 20];
-    thread_rng().fill_bytes(&mut random_bytes);
 
-    return Ok(create_response(200, String::new()));
+    let subscription = Subscription::new(request.email, request.location_id);
+    match store_subscription(&subscriptions_table, &region, subscription).await {
+        Ok(_res) => Ok(create_response(200, "Successfully created subscription".to_owned())),
+        Err(error) => {
+            error!("Failed to write to database: {}", error);
+            Ok(create_response(500, "Failed to write to database".to_owned()))
+        }
+    }
 }
 
 fn create_response(status_code: i64, body: String) -> ApiGatewayProxyResponse {

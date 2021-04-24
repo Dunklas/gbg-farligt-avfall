@@ -17,8 +17,8 @@ impl fmt::Display for MalformedSubscription {
 }
 impl error::Error for MalformedSubscription {}
 
-pub async fn store_subscription(table: String, region: Region, subscription: Subscription) -> Result<(), Error> {
-    let client = DynamoDbClient::new(region);
+pub async fn store_subscription(table: &String, region: &Region, subscription: Subscription) -> Result<(), Error> {
+    let client = DynamoDbClient::new(region.clone());
 
     let mut attributes: HashMap<String, AttributeValue> = HashMap::new(); 
     attributes.insert("email".to_owned(), AttributeValue{
@@ -40,7 +40,7 @@ pub async fn store_subscription(table: String, region: Region, subscription: Sub
 
     match client.put_item(PutItemInput{
         item: attributes,
-        table_name: table,
+        table_name: table.clone(),
         ..Default::default()
     }).await {
         Ok(_response) => {
@@ -52,11 +52,11 @@ pub async fn store_subscription(table: String, region: Region, subscription: Sub
     }
 }
 
-pub async fn get_subscription(table: String, region: Region, email: String, location_id: String) -> Result<Option<Subscription>, Error>{
-    let client = DynamoDbClient::new(region);
+pub async fn get_subscription(table: &String, region: &Region, email: &String, location_id: &String) -> Result<Option<Subscription>, Error>{
+    let client = DynamoDbClient::new(region.clone());
 
     match client.get_item(GetItemInput{
-        table_name: table,
+        table_name: table.clone(),
         ..Default::default()
     }).await {
         Ok(response) => {
@@ -70,8 +70,8 @@ pub async fn get_subscription(table: String, region: Region, email: String, loca
                 Some(subscription) => Ok(Some(subscription)),
                 None => {
                     Err(Box::new(MalformedSubscription{
-                        email,
-                        location_id
+                        email: email.clone(),
+                        location_id: location_id.clone()
                     }))
                 }
             }
