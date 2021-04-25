@@ -42,6 +42,10 @@ async fn handle_request(
         }
     };
 
+    if subscription.is_authenticated {
+        return Ok(create_response(400, "Subscription already verified".to_owned()))
+    }
+
     subscription.verify();
 
     match store_subscription(&subscriptions_table, &region, subscription).await {
