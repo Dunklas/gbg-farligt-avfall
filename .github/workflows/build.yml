@@ -32,7 +32,7 @@ jobs:
                   -c version=${{ steps.pull_request.outputs.number }}
                   -c hostedZoneId=${{ secrets.HOSTED_ZONE_ID }}
                   -c domainName=${{ secrets.DOMAIN_NAME }}
-                   -c adminEmail=${{ secrets.ADMIN_EMAIL }}
+                  -c adminEmail=${{ secrets.ADMIN_EMAIL }}
                   -c sendgridApiKey=${{ secrets.SENDGRID_API_KEY }}
           actions_comment: false
         env:
