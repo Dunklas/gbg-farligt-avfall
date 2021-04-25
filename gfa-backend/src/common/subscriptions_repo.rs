@@ -14,10 +14,10 @@ impl fmt::Display for MalformedSubscription {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let mut error_message = "Malformed subscription in database.".to_owned();
     if self.email.is_some() {
-        error_message.push_str(&format!("Email: {}.", self.email.unwrap()));
+        error_message.push_str(&format!("Email: {}.", self.email.as_ref().unwrap()));
     }
     if self.auth_token.is_some() {
-        error_message.push_str(&format!("Auth token: {}.", self.auth_token.unwrap()));
+        error_message.push_str(&format!("Auth token: {}.", self.auth_token.as_ref().unwrap()));
     }
     write!(f, "{}", error_message)
   } 
