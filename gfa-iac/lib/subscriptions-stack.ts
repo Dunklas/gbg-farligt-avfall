@@ -60,11 +60,7 @@ export class SubscriptionStack extends NestedStack {
             allowMethods: ['POST'],
             allowHeaders: ['Content-Typ', 'Accept']
         });
-        verifyResource.addMethod('POST', verifySubscriptionIntegration, {
-            requestParameters: {
-                'auth_token': true,
-            },
-        });
+        verifyResource.addMethod('POST', verifySubscriptionIntegration);
     }
 
 }

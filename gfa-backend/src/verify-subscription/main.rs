@@ -19,6 +19,7 @@ async fn handle_request(
     _: Context,
 ) -> Result<ApiGatewayProxyResponse, Error> {
     info!("{:?}", event.path_parameters);
+    info!("{:?}", event.query_string_parameters);
     Ok(create_response(200, "Hello verify!".to_owned()))
 }
 
