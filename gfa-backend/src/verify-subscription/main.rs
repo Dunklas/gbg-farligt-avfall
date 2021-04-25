@@ -1,8 +1,10 @@
-use std::{collections::HashMap};
+use std::{env, str::FromStr, collections::HashMap};
 use log::{self, info, LevelFilter};
 use simple_logger::SimpleLogger;
 use lambda::{handler_fn, Context};
 use aws_lambda_events::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
+use rusoto_core::Region;
+use common::subscriptions_repo::{get_subscription, store_subscription};
 
 type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 
@@ -18,6 +20,16 @@ async fn handle_request(
     event: ApiGatewayProxyRequest,
     _: Context,
 ) -> Result<ApiGatewayProxyResponse, Error> {
+    let subscriptions_table = env::var("SUBSCRIPTIONS_TABLE").unwrap();
+    let region = env::var("AWS_REGION").unwrap();
+    let region = Region::from_str(&region).unwrap();
+
+    let auth_token = match event.query_string_parameters.get("auth_token") {
+        Some(auth_token) => auth_token,
+        None => {
+            return Ok(create_response(400, "Missing authentication token".to_owned()));
+        }
+    };
     info!("{:?}", event.path_parameters);
     info!("{:?}", event.query_string_parameters);
     Ok(create_response(200, "Hello verify!".to_owned()))
