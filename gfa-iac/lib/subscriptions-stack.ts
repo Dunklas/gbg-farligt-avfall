@@ -6,6 +6,7 @@ import { RestApi, LambdaIntegration, Cors } from '@aws-cdk/aws-apigateway';
 
 export interface SubscriptionsStackProps extends NestedStackProps {
     api: RestApi,
+    verifyUrl: string,
 }
 
 export class SubscriptionStack extends NestedStack {
@@ -26,8 +27,9 @@ export class SubscriptionStack extends NestedStack {
         const addSubscription = new GfaFunction(this, 'addSubscription', {
             name: 'add-subscription',
             environment: {
-                SUBSCRIPTIONS_TABLE: subscriptionsDb.tableName
-            }
+                SUBSCRIPTIONS_TABLE: subscriptionsDb.tableName,
+                VERIFY_URL: props.verifyUrl,
+            },
         });
         subscriptionsDb.grantReadWriteData(addSubscription.handler);
 

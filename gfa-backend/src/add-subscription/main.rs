@@ -24,6 +24,7 @@ async fn handle_request(
     _: Context,
 ) -> Result<ApiGatewayProxyResponse, Error> {
     let subscriptions_table = env::var("SUBSCRIPTIONS_TABLE").unwrap();
+    let verify_url = env::var("VERIFY_URL").unwrap();
     let region = env::var("AWS_REGION").unwrap();
     let region = Region::from_str(&region).unwrap();
 

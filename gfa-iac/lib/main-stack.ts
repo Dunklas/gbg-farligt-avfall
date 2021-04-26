@@ -32,6 +32,11 @@ export class GbgFarligtAvfallStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY
     });
 
+    const webStack = new WebStack(this, 'web-stack', {
+      webCertParameterName: props.webCertParameterName
+    });
+    const apiStack = new ApiStack(this, 'api-stack');
+
     const alertTopic = new Topic(this, 'admin-alert');
     const adminEmail = app.node.tryGetContext('adminEmail');
     if (adminEmail) {
@@ -50,10 +55,17 @@ export class GbgFarligtAvfallStack extends Stack {
       alertTopic,
     });
 
-    const webStack = new WebStack(this, 'web-stack', {
-      webCertParameterName: props.webCertParameterName
+    new StopsStack(this, 'stops-stack', {
+      api: apiStack.api,
+      stopsBucket: stopsBucket,
+      stopsPath: stopsS3Path
+    })
+
+    new SubscriptionStack(this, 'subscription-stack', {
+      api: apiStack.api,
+      verifyUrl: `${webStack.externalUrl}/verify`
     });
-    const apiStack = new ApiStack(this, 'api-stack');
+
 
     const sendgridApiKey = app.node.tryGetContext('sendgridApiKey');
     const hostedZoneId = app.node.tryGetContext('hostedZoneId');
@@ -62,16 +74,6 @@ export class GbgFarligtAvfallStack extends Stack {
       hostedZoneId,
       domainName,
       apiKey: sendgridApiKey,
-    });
-
-    const stopsStack = new StopsStack(this, 'stops-stack', {
-      api: apiStack.api,
-      stopsBucket: stopsBucket,
-      stopsPath: stopsS3Path
-    })
-
-    const subscriptionStack = new SubscriptionStack(this, 'subscription-stack', {
-      api: apiStack.api
     });
 
     new CfnOutput(this, 'WebBucket', {
@@ -84,7 +86,7 @@ export class GbgFarligtAvfallStack extends Stack {
       value: apiStack.externalUrl || apiStack.api.url,
     });
     new CfnOutput(this, 'WebUrl', {
-      value: webStack.webDomainName,
+      value: webStack.externalUrl,
     });
   }
 }
