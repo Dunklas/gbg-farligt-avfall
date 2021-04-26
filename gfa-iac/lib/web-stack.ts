@@ -19,13 +19,26 @@ export class WebStack extends NestedStack {
         this.rootDomainName = scope.node.tryGetContext('domainName');
         this.webDomainName = `gfa.${this.rootDomainName}`;
 
-        const webHostingBucket = new Bucket(this, 'web-bucket', {
+        const webHostingBucket = this.setupHostingBucket();
+        this.webHostingBucketName = webHostingBucket.bucketName;
+        
+        const webCertArn = this.getCertificateArn();
+
+        const distribution = this.setupCloudFrontDist(webHostingBucket, webCertArn);
+        this.webDistributionId = distribution.distributionId;
+
+        this.setupDnsRecord(scope.node.tryGetContext('hostedZoneId'), this.rootDomainName, distribution);
+    }
+
+    setupHostingBucket() {
+        return new Bucket(this, 'web-bucket', {
             removalPolicy: RemovalPolicy.DESTROY,
             websiteIndexDocument: 'index.html',
             blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
         });
-        this.webHostingBucketName = webHostingBucket.bucketName;
-        
+    }
+
+    getCertificateArn() {
         const certificateArn = new AwsCustomResource(this, 'get-web-certificate-arn', {
             onUpdate: {
                 service: 'SSM',
@@ -40,11 +53,7 @@ export class WebStack extends NestedStack {
                 resources: AwsCustomResourcePolicy.ANY_RESOURCE,
             }),
         });
-
-        const distribution = this.setupCloudFrontDist(webHostingBucket, certificateArn.getResponseField('Parameter.Value'));
-        this.webDistributionId = distribution.distributionId;
-
-        this.setupDnsRecord(scope.node.tryGetContext('hostedZoneId'), this.rootDomainName, distribution);
+        return certificateArn.getResponseField('Parameter.Value');
     }
 
     setupCloudFrontDist(hostingBucket: Bucket, certificateArn: string) {
