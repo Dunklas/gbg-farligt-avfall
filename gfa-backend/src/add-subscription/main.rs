@@ -59,12 +59,16 @@ async fn handle_request(
 
     let subscription = Subscription::new(request.email, request.location_id);
     match store_subscription(&subscriptions_table, &region, subscription).await {
-        Ok(()) => Ok(create_response(200, "Successfully created subscription".to_owned())),
+        Ok(()) => (),
         Err(error) => {
             error!("Failed to write to database: {}", error);
-            Ok(create_response(500, "Failed to write to database".to_owned()))
+            return Ok(create_response(500, "Failed to write to database".to_owned()))
         }
-    }
+    };
+
+    // Generate email here!
+
+    Ok(create_response(200, "Successfully created subscription".to_owned()))
 }
 
 fn create_response(status_code: i64, body: String) -> ApiGatewayProxyResponse {
