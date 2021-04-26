@@ -113,7 +113,7 @@ mod tests {
     fn should_create_proper_request_body() {
       let send_email_request = SendEmailRequest{
         subject: "My subject".to_owned(),
-        html_content: "<p>I are HTML content</p>".to_owned(),
+        html_content: "<p>I are HTML content with token: -authToken-</p>".to_owned(),
         from: From{
           name: "My sender name".to_owned(),
           email: "my-sender-email@some-domain.com".to_owned()
@@ -164,7 +164,7 @@ mod tests {
         \"content\":[\
           {\
             \"type\":\"text/html\",\
-            \"value\":\"<p>I are HTML content</p>\"\
+            \"value\":\"<p>I are HTML content with token: -authToken-</p>\"\
           }\
         ]\
       }".to_owned();
