@@ -6,6 +6,10 @@ import { HostedZone, ARecord, RecordTarget } from '@aws-cdk/aws-route53';
 import * as targets from '@aws-cdk/aws-route53-targets';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 
+export interface WebStackProps extends NestedStackProps {
+  webCertParameterName: string
+}
+
 export class WebStack extends NestedStack {
 
     public readonly webDistributionId: string;
@@ -14,7 +18,7 @@ export class WebStack extends NestedStack {
 
     private readonly rootDomainName: string;
 
-    constructor(scope: Construct, id: string, props?: NestedStackProps) {
+    constructor(scope: Construct, id: string, props: WebStackProps) {
         super(scope, id, props);
         this.rootDomainName = scope.node.tryGetContext('domainName');
         this.webDomainName = `gfa.${this.rootDomainName}`;
@@ -22,7 +26,7 @@ export class WebStack extends NestedStack {
         const webHostingBucket = this.setupHostingBucket();
         this.webHostingBucketName = webHostingBucket.bucketName;
         
-        const webCertArn = this.getCertificateArn();
+        const webCertArn = this.getCertificateArn(props.webCertParameterName);
 
         const distribution = this.setupCloudFrontDist(webHostingBucket, webCertArn);
         this.webDistributionId = distribution.distributionId;
@@ -38,13 +42,13 @@ export class WebStack extends NestedStack {
         });
     }
 
-    getCertificateArn() {
+    getCertificateArn(parameterName: string) {
         const certificateArn = new AwsCustomResource(this, 'get-web-certificate-arn', {
             onUpdate: {
                 service: 'SSM',
                 action: 'getParameter',
                 parameters: {
-                    'Name': 'gfa-web-certificate',
+                    'Name': parameterName,
                 },
                 region: 'us-east-1',
                 physicalResourceId: PhysicalResourceId.of(new Date().toISOString()),

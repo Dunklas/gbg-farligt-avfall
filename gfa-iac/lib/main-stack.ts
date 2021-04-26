@@ -11,10 +11,14 @@ import { SendGridDomainVerifier } from './sendgrid/domain-verifier';
 import { SubscriptionStack } from './subscriptions-stack';
 import { StopsStack } from './stops-stack';
 
+export interface GbgFarligtAvfallStackProps extends StackProps {
+  webCertParameterName: string
+}
+
 export class GbgFarligtAvfallStack extends Stack {
 
-  constructor(app: App, id: string) {
-    super(app, id);
+  constructor(app: App, id: string, props: GbgFarligtAvfallStackProps) {
+    super(app, id, props);
 
     const eventsDb = new Table(this, 'events-db', {
       partitionKey: { name: 'event_date', type: AttributeType.STRING },
@@ -46,7 +50,9 @@ export class GbgFarligtAvfallStack extends Stack {
       alertTopic,
     });
 
-    const webStack = new WebStack(this, 'web-stack');
+    const webStack = new WebStack(this, 'web-stack', {
+      webCertParameterName: props.webCertParameterName
+    });
     const apiStack = new ApiStack(this, 'api-stack');
 
     const sendgridApiKey = app.node.tryGetContext('sendgridApiKey');
