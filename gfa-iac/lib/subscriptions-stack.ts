@@ -7,6 +7,8 @@ import { RestApi, LambdaIntegration, Cors } from '@aws-cdk/aws-apigateway';
 export interface SubscriptionsStackProps extends NestedStackProps {
     api: RestApi,
     verifyUrl: string,
+    emailDomain: string,
+    apiKey: string
 }
 
 export class SubscriptionStack extends NestedStack {
@@ -29,6 +31,8 @@ export class SubscriptionStack extends NestedStack {
             environment: {
                 SUBSCRIPTIONS_TABLE: subscriptionsDb.tableName,
                 VERIFY_URL: props.verifyUrl,
+                SENDGRID_API_KEY: props.apiKey,
+                EMAIL_DOMAIN: props.emailDomain,
             },
         });
         subscriptionsDb.grantReadWriteData(addSubscription.handler);

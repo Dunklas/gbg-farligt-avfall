@@ -61,15 +61,16 @@ export class GbgFarligtAvfallStack extends Stack {
       stopsPath: stopsS3Path
     })
 
+    const domainName = app.node.tryGetContext('domainName');
+    const sendgridApiKey = app.node.tryGetContext('sendgridApiKey');
     new SubscriptionStack(this, 'subscription-stack', {
       api: apiStack.api,
-      verifyUrl: `${webStack.externalUrl}/verify`
+      verifyUrl: `${webStack.externalUrl}/verify`,
+      emailDomain: domainName,
+      apiKey: sendgridApiKey,
     });
 
-
-    const sendgridApiKey = app.node.tryGetContext('sendgridApiKey');
     const hostedZoneId = app.node.tryGetContext('hostedZoneId');
-    const domainName = app.node.tryGetContext('domainName');
     new SendGridDomainVerifier(this, 'sendgrid-verifier', {
       hostedZoneId,
       domainName,

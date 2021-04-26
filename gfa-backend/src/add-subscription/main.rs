@@ -27,6 +27,7 @@ async fn handle_request(
     let subscriptions_table = env::var("SUBSCRIPTIONS_TABLE").unwrap();
     let verify_url = env::var("VERIFY_URL").unwrap();
     let api_key = env::var("SENDGRID_API_KEY").unwrap();
+    let email_domain = env::var("EMAIL_DOMAIN").unwrap();
     let region = env::var("AWS_REGION").unwrap();
     let region = Region::from_str(&region).unwrap();
 
@@ -89,7 +90,7 @@ async fn handle_request(
     let email_request = SendEmailRequest {
         from: From {
             name: "Göteborg Farligt Avfall notifications".to_owned(),
-            email: "noreply-farligtavfall@rdunk.net".to_owned(), // Env variable for domain??
+            email: format!("noreply-farligtavfall@{}", email_domain),
         },
         subject: "Please verify your subscription".to_owned(),
         recipients: vec![Recipient {
