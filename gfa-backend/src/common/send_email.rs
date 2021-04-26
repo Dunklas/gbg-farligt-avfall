@@ -5,21 +5,22 @@ use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use serde::Serialize;
 
 pub struct SendEmailRequest {
-    subject: String,
-    html_content: String,
-    from: From,
-    recipients: Vec<Recipient>
+    pub subject: String,
+    pub html_content: String,
+    pub from: From,
+    pub recipients: Vec<Recipient>
 }
 pub struct Recipient {
-  email: String,
-  substitutions: HashMap<String, String>
+  pub email: String,
+  pub substitutions: HashMap<String, String>
 }
 
 #[derive(Serialize, Debug)]
 pub struct From {
-    name: String,
-    email: String,
+    pub name: String,
+    pub email: String,
 }
+
 #[derive(Debug)]
 pub struct BadStatusCode {
   status_code: StatusCode

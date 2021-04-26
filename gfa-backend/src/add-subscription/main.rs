@@ -1,11 +1,12 @@
-use std::{collections::HashMap, env, str::FromStr};
-use log::{self, error, LevelFilter};
-use simple_logger::SimpleLogger;
-use lambda::{handler_fn, Context};
 use aws_lambda_events::event::apigw::{ApiGatewayProxyRequest, ApiGatewayProxyResponse};
-use rusoto_core::Region;
-use common::subscriptions_repo::{get_subscription, store_subscription};
+use common::send_email::{send_email, From, Recipient, SendEmailRequest};
 use common::subscription::Subscription;
+use common::subscriptions_repo::{get_subscription, store_subscription};
+use lambda::{handler_fn, Context};
+use log::{self, error, LevelFilter};
+use rusoto_core::Region;
+use simple_logger::SimpleLogger;
+use std::{collections::HashMap, env, str::FromStr};
 
 mod add_subscription_request;
 
@@ -42,18 +43,32 @@ async fn handle_request(
             }
         };
 
-    match get_subscription(&subscriptions_table, &region, &request.email, &request.location_id).await {
+    match get_subscription(
+        &subscriptions_table,
+        &region,
+        &request.email,
+        &request.location_id,
+    )
+    .await
+    {
         Ok(optional_subscription) => match optional_subscription {
             Some(subscription) => {
                 if subscription.is_authenticated {
-                    return Ok(create_response(400, "Subscription already exist for this e-mail address and location".to_owned()));
+                    return Ok(create_response(
+                        400,
+                        "Subscription already exist for this e-mail address and location"
+                            .to_owned(),
+                    ));
                 }
             }
             None => {}
         },
         Err(error) => {
             error!("Failed to read from database: {}", error);
-            return Ok(create_response(500, "Failed to read from database".to_owned()));
+            return Ok(create_response(
+                500,
+                "Failed to read from database".to_owned(),
+            ));
         }
     }
 
@@ -62,13 +77,34 @@ async fn handle_request(
         Ok(()) => (),
         Err(error) => {
             error!("Failed to write to database: {}", error);
-            return Ok(create_response(500, "Failed to write to database".to_owned()))
+            return Ok(create_response(
+                500,
+                "Failed to write to database".to_owned(),
+            ));
         }
+    };
+
+    let email_request = SendEmailRequest {
+        from: From {
+            name: "Göteborg Farligt Avfall notifications".to_owned(),
+            email: "noreply-farligtavfall@rdunk.net".to_owned(), // Env variable for domain??
+        },
+        subject: "Please verify your subscription".to_owned(),
+        recipients: vec![Recipient {
+            email: subscription.email,
+            substitutions: [("-authToken-".to_owned(), subscription.auth_token)].iter()
+                .cloned()
+                .collect::<HashMap<String, String>>()
+        }],
+        html_content: "<>".to_owned()
     };
 
     // Generate email here!
 
-    Ok(create_response(200, "Successfully created subscription".to_owned()))
+    Ok(create_response(
+        200,
+        "Successfully created subscription".to_owned(),
+    ))
 }
 
 fn create_response(status_code: i64, body: String) -> ApiGatewayProxyResponse {
