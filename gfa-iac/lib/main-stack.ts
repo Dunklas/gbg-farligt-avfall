@@ -71,14 +71,14 @@ export class GbgFarligtAvfallStack extends Stack {
     new CfnOutput(this, 'WebBucket', {
       value: webStack.webHostingBucketName,
     });
+    new CfnOutput(this, 'WebDistributionId', {
+      value: webStack.webDistributionId,
+    });
     new CfnOutput(this, 'ApiUrl', {
       value: apiStack.externalUrl || apiStack.api.url,
     });
     new CfnOutput(this, 'WebUrl', {
-      value: webStack.webUrl,
+      value: webStack.webDomainName,
     });
-    new CfnOutput(this, 'WebDistributionId', {
-      value: webStack.webDistributionId,
-    })
   }
 }

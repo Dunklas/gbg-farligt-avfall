@@ -1,19 +1,23 @@
 import { Construct, RemovalPolicy, Duration } from '@aws-cdk/core';
 import { NestedStack, NestedStackProps } from '@aws-cdk/aws-cloudformation';
 import { BlockPublicAccess, Bucket } from '@aws-cdk/aws-s3';
-import { CloudFrontAllowedCachedMethods, CloudFrontAllowedMethods, CloudFrontWebDistribution, HttpVersion, OriginAccessIdentity, PriceClass } from '@aws-cdk/aws-cloudfront';
+import { CloudFrontAllowedCachedMethods, CloudFrontAllowedMethods, CloudFrontWebDistribution, Distribution, HttpVersion, OriginAccessIdentity, PriceClass } from '@aws-cdk/aws-cloudfront';
 import { HostedZone, ARecord, RecordTarget } from '@aws-cdk/aws-route53';
 import * as targets from '@aws-cdk/aws-route53-targets';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 
 export class WebStack extends NestedStack {
 
-    public readonly webUrl: string;
     public readonly webDistributionId: string;
     public readonly webHostingBucketName: string;
+    public readonly webDomainName: string;
+
+    private readonly rootDomainName: string;
 
     constructor(scope: Construct, id: string, props?: NestedStackProps) {
         super(scope, id, props);
+        this.rootDomainName = scope.node.tryGetContext('domainName');
+        this.webDomainName = `gfa.${this.rootDomainName}`;
 
         const webHostingBucket = new Bucket(this, 'web-bucket', {
             removalPolicy: RemovalPolicy.DESTROY,
@@ -22,10 +26,6 @@ export class WebStack extends NestedStack {
         });
         this.webHostingBucketName = webHostingBucket.bucketName;
         
-        const accessIdentity = new OriginAccessIdentity(this, 'web-access-identity');
-        webHostingBucket.grantRead(accessIdentity);
-
-
         const certificateArn = new AwsCustomResource(this, 'get-web-certificate-arn', {
             onUpdate: {
                 service: 'SSM',
@@ -40,14 +40,21 @@ export class WebStack extends NestedStack {
                 resources: AwsCustomResourcePolicy.ANY_RESOURCE,
             }),
         });
-        const domainName = scope.node.tryGetContext('domainName');
-        const webDomainName = `gfa.${domainName}`;
 
-        const distribution = new CloudFrontWebDistribution(this, 'web-dist', {
+        const distribution = this.setupCloudFrontDist(webHostingBucket, certificateArn.getResponseField('Parameter.Value'));
+        this.webDistributionId = distribution.distributionId;
+
+        this.setupDnsRecord(scope.node.tryGetContext('hostedZoneId'), this.rootDomainName, distribution);
+    }
+
+    setupCloudFrontDist(hostingBucket: Bucket, certificateArn: string) {
+        const accessIdentity = new OriginAccessIdentity(this, 'web-access-identity');
+        hostingBucket.grantRead(accessIdentity);
+        return new CloudFrontWebDistribution(this, 'web-dist', {
             originConfigs: [
                 {
                     s3OriginSource: {
-                        s3BucketSource: webHostingBucket,
+                        s3BucketSource: hostingBucket,
                         originAccessIdentity: accessIdentity,
                     },
                     behaviors: [{
@@ -62,9 +69,9 @@ export class WebStack extends NestedStack {
                 }
             ],
             viewerCertificate: {
-                aliases: [ webDomainName ],
+                aliases: [ this.webDomainName ],
                 props: {
-                    acmCertificateArn: certificateArn.getResponseField('Parameter.Value'),
+                    acmCertificateArn: certificateArn,
                     sslSupportMethod: 'sni-only',
                 },
             },
@@ -86,18 +93,17 @@ export class WebStack extends NestedStack {
                 }
             ] 
         });
-        this.webUrl = distribution.distributionDomainName;
-        this.webDistributionId = distribution.distributionId;
+    }
 
-        const hostedZoneId = scope.node.tryGetContext('hostedZoneId');
+    setupDnsRecord(hostedZoneId: string, domainName: string, cloudFront: CloudFrontWebDistribution) {
         const hostedZone = HostedZone.fromHostedZoneAttributes(this, 'e-hostedzone', {
             hostedZoneId: hostedZoneId,
             zoneName: domainName,
         });
         new ARecord(this, 'web-domain-record', {
             zone: hostedZone,
-            target: RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
-            recordName: webDomainName,
+            target: RecordTarget.fromAlias(new targets.CloudFrontTarget(cloudFront)),
+            recordName: this.webDomainName,
         });
     }
 }
