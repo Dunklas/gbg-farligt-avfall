@@ -69,10 +69,12 @@ pub async fn send_email(api_key: String, request: SendEmailRequest) -> Result<()
       HeaderName::from_lowercase(b"authorization").unwrap(),
       HeaderValue::from_str(&format!("Bearer {}", api_key)).unwrap()
     );
-    let body = create_request_body(request);
-    info!("Request body: {}", body);
+    headers.insert(
+      HeaderName::from_lowercase(b"content-type").unwrap(),
+      HeaderValue::from_str("application/json").unwrap()
+    );
     match client.post(URL)
-      .body(body)
+      .body(create_request_body(request))
       .headers(headers)
       .send()
       .await {
