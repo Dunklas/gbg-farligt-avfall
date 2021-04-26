@@ -25,6 +25,11 @@ export class SubscriptionStack extends NestedStack {
             indexName: 'byAuthToken',
             partitionKey: { name: 'auth_token', type: AttributeType.STRING }
         });
+        subscriptionsDb.addGlobalSecondaryIndex({
+            indexName: 'byLocationId',
+            partitionKey: { name: 'location_id', type: AttributeType.STRING },
+            sortKey: { name: 'email', type: AttributeType.STRING },
+        });
 
         const addSubscription = new GfaFunction(this, 'addSubscription', {
             name: 'add-subscription',
