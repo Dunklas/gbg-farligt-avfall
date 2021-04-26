@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use reqwest::{Client, StatusCode};
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use serde::Serialize;
+use log::{self, info, LevelFilter};
 
 pub struct SendEmailRequest {
     pub subject: String,
@@ -68,8 +69,10 @@ pub async fn send_email(api_key: String, request: SendEmailRequest) -> Result<()
       HeaderName::from_lowercase(b"authorization").unwrap(),
       HeaderValue::from_str(&format!("Bearer {}", api_key)).unwrap()
     );
+    let body = create_request_body(request);
+    info!("Request body: {}", body);
     match client.post(URL)
-      .body(create_request_body(request))
+      .body(body)
       .headers(headers)
       .send()
       .await {
