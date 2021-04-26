@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use reqwest::{Client, StatusCode};
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use serde::Serialize;
-use log::{self, info, LevelFilter};
 
 pub struct SendEmailRequest {
     pub subject: String,
