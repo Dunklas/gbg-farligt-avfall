@@ -26,6 +26,7 @@ async fn handle_request(
 ) -> Result<ApiGatewayProxyResponse, Error> {
     let subscriptions_table = env::var("SUBSCRIPTIONS_TABLE").unwrap();
     let verify_url = env::var("VERIFY_URL").unwrap();
+    let api_key = env::var("SENDGRID_API_KEY").unwrap();
     let region = env::var("AWS_REGION").unwrap();
     let region = Region::from_str(&region).unwrap();
 
@@ -73,7 +74,7 @@ async fn handle_request(
     }
 
     let subscription = Subscription::new(request.email, request.location_id);
-    match store_subscription(&subscriptions_table, &region, subscription).await {
+    match store_subscription(&subscriptions_table, &region, &subscription).await {
         Ok(()) => (),
         Err(error) => {
             error!("Failed to write to database: {}", error);
@@ -84,6 +85,7 @@ async fn handle_request(
         }
     };
 
+    let html_content = include_str!("verification_email.html");
     let email_request = SendEmailRequest {
         from: From {
             name: "Göteborg Farligt Avfall notifications".to_owned(),
@@ -92,19 +94,19 @@ async fn handle_request(
         subject: "Please verify your subscription".to_owned(),
         recipients: vec![Recipient {
             email: subscription.email,
-            substitutions: [("-authToken-".to_owned(), subscription.auth_token)].iter()
+            substitutions: [("-verifyUrl-".to_owned(), format!("{}/verify?auth_token={}", verify_url, subscription.auth_token))].iter()
                 .cloned()
                 .collect::<HashMap<String, String>>()
         }],
-        html_content: "<>".to_owned()
+        html_content: html_content.to_owned()
     };
-
-    // Generate email here!
-
-    Ok(create_response(
-        200,
-        "Successfully created subscription".to_owned(),
-    ))
+    match send_email(api_key, email_request).await {
+        Ok(_response) => Ok(create_response(200, "Successfully created subscription".to_owned())),
+        Err(error) => {
+            error!("Failed to send verification email: {}", error);
+            Ok(create_response(500, "Failed to send verification email".to_owned()))
+        }
+    }
 }
 
 fn create_response(status_code: i64, body: String) -> ApiGatewayProxyResponse {
