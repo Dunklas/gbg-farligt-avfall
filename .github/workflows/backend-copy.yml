@@ -2,8 +2,8 @@ name: Copy backend
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths-ignore:
-      - 'gfa-backend/**'
+    paths:
+      - '!gfa-backend/**'
 jobs:
   copy-backend:
     runs-on: ubuntu-latest
