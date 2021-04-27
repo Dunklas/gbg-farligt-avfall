@@ -16,14 +16,14 @@ jobs:
             - 'gfa-backend/**'
   test-backend:
     needs: changes
-    if: ${{ needs.changes.outputs.backend-changes == 'true' }}
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Do this
         run: echo 'Test and build backend'
   copy-backend:
     needs: changes
-    if: ${{ needs.changes.outputs.backend-changes == 'false' }}
+    if: ${{ needs.changes.outputs.backend == 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Do this
