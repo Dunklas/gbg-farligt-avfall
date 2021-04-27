@@ -3,7 +3,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths-ignore:
-      - '!gfa-backend/**'
+      - 'gfa-backend/**'
 jobs:
   copy-backend:
     runs-on: ubuntu-latest
