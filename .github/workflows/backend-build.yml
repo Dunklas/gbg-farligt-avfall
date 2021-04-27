@@ -18,13 +18,13 @@ jobs:
     needs: detect-changes
     if: ${{ needs.changes.outputs.backend-changes == 'true' }}
     runs-on: ubuntu-latest
-      steps:
-        - name: Do this
-          run: echo 'Test and build backend'
+    steps:
+      - name: Do this
+        run: echo 'Test and build backend'
   copy-backend:
     needs: detect-changes
     if: ${{ needs.changes.outputs.backend-changes == 'false' }}
     runs-on: ubuntu-latest
-      steps:
-        - name: Do this
-          run: echo 'Just copy backend'
+    steps:
+      - name: Do this
+        run: echo 'Just copy backend'
