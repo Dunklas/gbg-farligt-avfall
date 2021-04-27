@@ -2,7 +2,7 @@ name: Copy backend
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
+    paths-ignore:
       - 'gfa-backend/**'
 jobs:
   copy-backend:

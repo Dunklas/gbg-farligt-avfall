@@ -2,8 +2,8 @@ name: Build backend
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths-ignore:
-      - '!gfa-backend/**'
+    paths:
+      - 'gfa-backend/**'
 jobs:
   test-backend:
     runs-on: ubuntu-latest
