@@ -3,10 +3,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  detect-changes:
+  changes:
     runs-on: ubuntu-latest
     outputs:
-      backend-changes: ${{ steps.filter.outputs.backend }}
+      backend: ${{ steps.filter.outputs.backend }}
     steps:
     - uses: dorny/paths-filter@v2
       id: filter
@@ -15,14 +15,14 @@ jobs:
           backend:
             - 'gfa-backend/**'
   test-backend:
-    needs: detect-changes
+    needs: changes
     if: ${{ needs.changes.outputs.backend-changes == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Do this
         run: echo 'Test and build backend'
   copy-backend:
-    needs: detect-changes
+    needs: changes
     if: ${{ needs.changes.outputs.backend-changes == 'false' }}
     runs-on: ubuntu-latest
     steps:
