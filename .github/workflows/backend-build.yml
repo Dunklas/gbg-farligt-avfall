@@ -42,6 +42,7 @@ jobs:
         run: |
           VERSION=${{ needs.set-version.outputs.version }}
           PREVIOUS_VERSION=$((VERSION-1))
+          echo $PREVIOUS_VERSION
           for executable in ${{ env.EXECUTABLES }};
           do
             aws s3 sync s3://${{ secrets.S3_ARTIFACT_BUCKET }}/gfa-$executable-$PREVIOUS_VERSION \
