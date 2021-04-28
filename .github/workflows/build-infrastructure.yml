@@ -1,9 +1,9 @@
-name: Build
-
+name: Build infrastructure
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-
+    paths:
+      - 'gfa-iac/**'
 jobs:
   test-infastructure:
     name: Test infastructure
@@ -29,23 +29,3 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
-
-  test-frontend:
-    name: Test frontend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: gfa-frontend
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - name: Install dependencies
-        run: npm ci
-      - name: Test frontend
-        run: npm run test
-      - name: Build frontend
-        run: API_URL=testbuild npm run build
