@@ -6,4 +6,4 @@ on:
 jobs:
   test:
     steps:
-      run: echo ${{ github.event.workflow_run }}
+      - run: echo ${{ github.event.workflow_run }}
