@@ -1,6 +1,7 @@
 name: "Verify build"
 on:
-  workflow_run: ["Build/Test backend", "Build/Test frontend", "Build infrastructure"]
+  workflow_run:
+    workflows: ["Build/Test backend", "Build/Test frontend", "Build infrastructure"]
 
 jobs:
   test:
