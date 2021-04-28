@@ -5,16 +5,6 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-
-  test-backend:
-    name: Test backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Unit tests
-        run: (cd gfa-backend && cargo test --release)
-
   test-infastructure:
     name: Test infastructure
     runs-on: ubuntu-latest
@@ -59,40 +49,3 @@ jobs:
         run: npm run test
       - name: Build frontend
         run: API_URL=testbuild npm run build
-
-  build:
-    name: Build backend
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2 
-      
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      
-      - name: Install required tools
-        run: sudo apt install musl-tools -y
-
-      - name: Add target
-        run: rustup target add x86_64-unknown-linux-musl
-
-      - name: Obtain PR number
-        run: |
-          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-          echo "::set-output name=number::$PR_NUMBER" 
-        id: pull_request
-
-      - name: Build
-        run: |
-          (cd gfa-backend && cargo build --release --target x86_64-unknown-linux-musl)
-          executables="get-stops save-events save-stops scraper notify add-subscription verify-subscription"
-          for executable in $executables;
-          do
-            cp "gfa-backend/target/x86_64-unknown-linux-musl/release/${executable}" bootstrap
-            zip -j lambda.zip bootstrap
-            aws s3 cp lambda.zip s3://${{ secrets.S3_ARTIFACT_BUCKET }}/gfa-$executable-${{ steps.pull_request.outputs.number }}
-          done
