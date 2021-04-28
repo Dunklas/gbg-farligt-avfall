@@ -1,0 +1,8 @@
+name: "Verify build"
+on:
+  workflow_run: ["Build/Test backend", "Build/Test frontend", "Build infrastructure"]
+
+jobs:
+  test:
+    steps:
+      run: echo ${{ github.event.workflow_run }}
