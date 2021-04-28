@@ -58,7 +58,7 @@ async fn handle_request(_event: Value, _: Context) -> Result<Value, Error> {
             info!("Skipped sending notifications for {}, since there are no subscribers.", event);
             break;
         }
-       
+
         let html_content = match email_formatter::format_email_message(&event) {
             Some(content) => content,
             None => {
@@ -80,11 +80,11 @@ async fn handle_request(_event: Value, _: Context) -> Result<Value, Error> {
                 .collect(),
             html_content,
         };
-        match send_email(api_key, email_request).await {
+        match send_email(&api_key, email_request).await {
             Ok(_res) => {
                 info!("Successfully sent notification email for: {}", event);
             }
-            Err(e) => {
+            Err(_e) => {
                 error!("Unable to send notification email for: {}", event);
             }
         };
