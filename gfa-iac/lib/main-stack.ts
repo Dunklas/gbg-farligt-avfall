@@ -68,6 +68,8 @@ export class GbgFarligtAvfallStack extends Stack {
     new NotifyStack(this, 'notify-stack', {
       eventsTable: eventsDb,
       subscriptionsTable: subscriptionsStack.subscriptionsDb, 
+      apiKey: sendgridApiKey,
+      emailDomain: domainName,
       alertTopic,
     });
 

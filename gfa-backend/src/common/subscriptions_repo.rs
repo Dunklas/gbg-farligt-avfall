@@ -168,7 +168,7 @@ pub async fn get_subscription_by_auth_token(table: &String, region: &Region, aut
     }
 }
 
-pub async fn get_authenticated_subscriptions_by_location_id(table: &String, region: &Region, location_id: &String) -> Result<Vec<Subscription>, Error> {
+pub async fn get_authenticated_subscriptions(table: &String, region: &Region, location_id: &String) -> Result<Vec<Subscription>, Error> {
     let client = DynamoDbClient::new(region.clone());
     let mut attribute_values = HashMap::new();
     attribute_values.insert(":locationId".to_owned(), AttributeValue{

@@ -11,6 +11,8 @@ import { GfaFunction } from './function/gfa-function';
 interface NotifyStackProps extends NestedStackProps {
     eventsTable: ITable,
     subscriptionsTable: ITable,
+    apiKey: string,
+    emailDomain: string,
     alertTopic: ITopic
 }
 
@@ -23,6 +25,8 @@ export class NotifyStack extends NestedStack {
             environment: {
                 EVENTS_TABLE: props.eventsTable.tableName,
                 SUBSCRIPTIONS_TABLE: props.subscriptionsTable.tableName,
+                SENDGRID_API_KEY: props.apiKey,
+                EMAIL_DOMAIN: props.emailDomain,
             }
         });
         props.eventsTable.grantReadData(notify.handler);
