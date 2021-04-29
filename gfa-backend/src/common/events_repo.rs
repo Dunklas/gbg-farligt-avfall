@@ -10,7 +10,7 @@ pub struct EventsRepoError {
 impl fmt::Display for EventsRepoError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for error in &self.errors {
-            write!(f, "{}\n", error)?;
+            writeln!(f, "{}", error)?;
         }
         write!(f, "Total db errors while writing events: {}", self.errors.len())
     }
@@ -77,14 +77,11 @@ pub async fn store(table: String, region: Region, events: Vec::<PickUpEvent>) ->
                 s: Some(event.street),
                 ..Default::default()
             });
-            match event.description.is_some() {
-                true => {
-                    attributes.insert("description".to_owned(), AttributeValue{
-                        s: Some(event.description.unwrap()),
-                        ..Default::default()
-                    });
-                },
-                _ => {}
+            if let true = event.description.is_some() {
+                attributes.insert("description".to_owned(), AttributeValue{
+                    s: Some(event.description.unwrap()),
+                    ..Default::default()
+                });
             }
             attributes.insert("start_time".to_owned(), AttributeValue{
                 s: Some(event.time_start),
@@ -113,18 +110,14 @@ pub async fn store(table: String, region: Region, events: Vec::<PickUpEvent>) ->
         });
     }
     let mut db_errors: Vec<RusotoError<BatchWriteItemError>> = Vec::new(); 
-    let mut unprocessed_count = 0 as usize;
+    let mut unprocessed_count = 0_usize;
     for batch_write_request in batch_write_requests {
         match client.batch_write_item(batch_write_request).await {
-            Ok(output) => match output.unprocessed_items {
-                Some(unprocessed_items) => match unprocessed_items.get(&table) {
-                    Some(items_for_table) => {
-                        unprocessed_count += items_for_table.len(); // TODO: Do this in a less nested way..
-                    },
-                    None => {}
-                },
-                None => {}
-            }
+            Ok(output) => if let Some(unprocessed_items) = output.unprocessed_items {
+                if let Some(items_for_table) = unprocessed_items.get(&table) {
+                    unprocessed_count += items_for_table.len(); // TODO: Do this in a less nested way..
+                }
+            },
             Err(e) => {
                 db_errors.push(e);
             },

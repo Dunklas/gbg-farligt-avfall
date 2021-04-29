@@ -11,7 +11,7 @@ pub struct PickUpStop {
 
 impl fmt::Display for PickUpStop {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} - {} ({})\n",
+        writeln!(f, "{} - {} ({})",
             self.district,
             self.street,
             match &self.description {

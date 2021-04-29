@@ -15,11 +15,11 @@ pub struct PageParserError {
 }
 impl fmt::Display for PageParserError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}\n", self.message)?;
-        if self.causes.len() > 0 {
-            write!(f, "Causes:\n")?;
+        writeln!(f, "{}", self.message)?;
+        if !self.causes.is_empty() {
+            writeln!(f, "Causes:")?;
             for cause in &self.causes {
-                write!(f, "{}\n", cause)?;
+                writeln!(f, "{}", cause)?;
             }
         } 
         write!(f, "Total causes: {}", self.causes.len())
@@ -48,7 +48,7 @@ impl PageParserError {
 pub fn parse_page(page: Vec<u8>) -> Result<Vec<PickUpEvent>, PageParserError> {
     let doc = match document::Document::from_read(page.as_slice()) {
         Ok(doc) => doc,
-        Err(_e) => return Err(PageParserError::new(format!("Could not format HTML document")))
+        Err(_e) => return Err(PageParserError::new("Could not format HTML document".to_owned()))
     };
     let mut events: Vec::<PickUpEvent> = Vec::new();
     let mut errors: Vec::<Box<dyn Error>> = Vec::new();
@@ -57,7 +57,7 @@ pub fn parse_page(page: Vec<u8>) -> Result<Vec<PickUpEvent>, PageParserError> {
             .into_selection().children().first() {
                 Some(element) => format_street(element.text()), 
                 None => {
-                    errors.push(Box::new(PageParserError::new(format!("No element with class c-snippet__title found"))));
+                    errors.push(Box::new(PageParserError::new("No element with class c-snippet__title found".to_owned())));
                     continue;
                 }
             };
@@ -65,7 +65,7 @@ pub fn parse_page(page: Vec<u8>) -> Result<Vec<PickUpEvent>, PageParserError> {
             .into_selection().first() {
                 Some(element) => format_district(element.text()),
                 None => {
-                    errors.push(Box::new(PageParserError::new(format!("No element with class c-snippet__meta found"))));
+                    errors.push(Box::new(PageParserError::new("No element with class c-snippet__meta found".to_owned())));
                     continue;
                 }
             };
@@ -73,7 +73,7 @@ pub fn parse_page(page: Vec<u8>) -> Result<Vec<PickUpEvent>, PageParserError> {
             .into_selection().first() {
                 Some(element) => element.text(),
                 None => {
-                    errors.push(Box::new(PageParserError::new(format!("No element with class c-snippet__selection found"))));
+                    errors.push(Box::new(PageParserError::new("No element with class c-snippet__selection found".to_owned())));
                     continue;
                 }
             };
@@ -107,7 +107,7 @@ pub fn parse_page(page: Vec<u8>) -> Result<Vec<PickUpEvent>, PageParserError> {
     if !errors.is_empty() {
         return Err(PageParserError::new_with_causes("Error(s) when parsing page".to_owned(), errors));
     }
-    return Ok(events);
+    Ok(events)
 } 
 
 fn format_street(raw: String) -> String {
