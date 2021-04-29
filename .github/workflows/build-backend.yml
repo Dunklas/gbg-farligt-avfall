@@ -67,7 +67,7 @@ jobs:
       - name: Install clippy
         run: rustup component add clippy
       - name: Linting
-        run: cargo clippy -- -D warnings
+        run: (cd gfa-backend && cargo clippy -- -D warnings)
 
   test-backend:
     needs: changes
