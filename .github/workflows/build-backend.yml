@@ -62,7 +62,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-release-cache-
       - name: Unit tests
-        run: cd gfa-backend && cargo test --release
+        run: (cd gfa-backend && cargo test --release)
   build-backend:
     needs: [changes, set-version]
     if: ${{ needs.changes.outputs.backend == 'true' }}
