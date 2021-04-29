@@ -76,6 +76,13 @@ jobs:
         run: sudo apt install musl-tools -y
       - name: Add target
         run: rustup target add x86_64-unknown-linux-musl
+      - name: Cache target
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-target
+        with:
+          path: target
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
       - name: Build
         run: |
           cargo build --release --target x86_64-unknown-linux-musl
