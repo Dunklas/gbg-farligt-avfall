@@ -27,7 +27,7 @@ pub async fn obtain_pages() -> Result<Vec<Vec<u8>>, PageFetcherError> {
     let main_page = fetch_page(&client, main_url).await?; 
     let total_events = find_total_items(&main_page)?;
     // let paging_path = find_paging_path(&main_page)?;
-    let paging_path = "/wps/portal/start/avfall-och-atervinning/har-lamnar-hushall-avfall/farligtavfallbilen/farligt-avfall-bilen/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8ziTYzcDQy9TAy9_f1MnAwcvXxd_JwM3Y3cPcz0w8EKDFCAo4FTkJGTsYGBu7-RfhTp-pFNIk4_HgVR-I2PBOo3x6k_wEg_WD9KP6ogMT0zDxwm-pGWBvoFuaGhEVUhjgC0EC9V/p0/IZ7_42G01J41KON4B0AJMDNB1G2GP2=CZ6_42G01J41KON4B0AJMDNB1G2GH6=MDfilterDirection!filterOrganisationType!filterArea=Epagination!0==/".to_string();
+    let paging_path = "/wps/portal/start/avfall-och-atervinning/har-lamnar-hushall-avfall/farligtavfallbilen/farligt-avfall-bilen/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8ziTYzcDQy9TAy9_f1MnAwcvXxd_JwM3Y3cPcz0w8EKDFCAo4FTkJGTsYGBu7-RfhTp-pFNIk4_HgVR-I2PBOo3x6k_wEg_WD9KP6ogMT0zDxwm-pGWBvoFuaGhEVUhjgC0EC9V/p0/IZ7_42G01J41KON4B0AJMDNB1G2GP2=CZ6_42G01J41KON4B0AJMDNB1G2GH6=MDfilterDirection!filterOrganisationType!filterArea=Epagination!0==/".to_owned();
     let urls = calculate_urls(&paging_path, total_events);
     let results = future::join_all(
         urls.into_iter()
@@ -128,7 +128,7 @@ fn calculate_urls(base_path: &String, total: u16) -> Vec::<String> {
     let mut urls: Vec::<String> = Vec::new();
     for i in 0..num_urls {
         let new_pagination = format!("Epagination!{}==/", i * 30);
-        urls.push(format!("{}{}", BASE_URL, PAGINATION_RE.replace(base_path, &new_pagination[..]).to_string()));
+        urls.push(format!("{}{}", BASE_URL, PAGINATION_RE.replace(base_path, &new_pagination[..]).to_owned()));
     }
     return urls; 
 }

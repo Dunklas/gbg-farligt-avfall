@@ -16,7 +16,7 @@ impl fmt::Display for PickUpStop {
             self.street,
             match &self.description {
                 Some(description) => description.clone(),
-                None => "-".to_string()
+                None => "-".to_owned()
             },
         )
     }

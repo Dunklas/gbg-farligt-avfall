@@ -73,10 +73,10 @@ async fn handle_request(_event: Value, _: Context) -> Result<ApiGatewayProxyResp
 
 fn create_response(body: String) -> ApiGatewayProxyResponse {
     let mut headers: HashMap<String, String> = HashMap::new();
-    headers.insert("Access-Control-Allow-Headers".to_string(), "Content-Type,Accept".to_string());
-    headers.insert("Access-Control-Allow-Methods".to_string(), "GET".to_string());
-    headers.insert("Access-Control-Allow-Origin".to_string(), "*".to_string());
-    return ApiGatewayProxyResponse{
+    headers.insert("Access-Control-Allow-Headers".to_owned(), "Content-Type,Accept".to_owned());
+    headers.insert("Access-Control-Allow-Methods".to_owned(), "GET".to_owned());
+    headers.insert("Access-Control-Allow-Origin".to_owned(), "*".to_owned());
+    ApiGatewayProxyResponse{
         status_code: 200,
         headers: headers,
         multi_value_headers: HashMap::new(),

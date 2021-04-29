@@ -104,8 +104,8 @@ pub fn parse_page(page: Vec<u8>) -> Result<Vec<PickUpEvent>, PageParserError> {
             };
         }
     }
-    if errors.len() > 0 {
-        return Err(PageParserError::new_with_causes(format!("Error(s) when parsing page"), errors));
+    if !errors.is_empty() {
+        return Err(PageParserError::new_with_causes("Error(s) when parsing page".to_owned(), errors));
     }
     return Ok(events);
 } 
@@ -127,11 +127,11 @@ fn split_desc_and_times(raw: String) -> Result<(Option<String>, String), PagePar
     let raw = raw.trim().to_lowercase();
     let captures = match DESC_TIMES_RE.captures(&raw) {
         Some(caps) => caps,
-        None => return Err(PageParserError::new(format!("No match found while splitting description and times: {}", raw)))?
+        None => return Err(PageParserError::new(format!("No match found while splitting description and times: {}", raw)))
     };
     let index = match captures.get(2) {
         Some(group) => group.start(),
-        None => return Err(PageParserError::new(format!("Second capturing group (swedish day name) not found while splitting description and times: {}", raw)))?
+        None => return Err(PageParserError::new(format!("Second capturing group (swedish day name) not found while splitting description and times: {}", raw)))
     };
     let description = match index == 0 {
         true => None,
@@ -141,7 +141,7 @@ fn split_desc_and_times(raw: String) -> Result<(Option<String>, String), PagePar
     Ok((description, raw_times))
 }
 
-fn parse_times(raw: &String, year: i32) -> Result<Vec<(DateTime::<chrono_tz::Tz>, DateTime<chrono_tz::Tz>)>, Box<dyn Error>> {
+fn parse_times(raw: &str, year: i32) -> Result<Vec<(DateTime::<chrono_tz::Tz>, DateTime<chrono_tz::Tz>)>, Box<dyn Error>> {
     lazy_static! {
         static ref DATETIME_RE: Regex = Regex::new(r"\w+ (?P<day>\d{1,2}) (?P<month>\w+) (?P<start>\d{2}\.\d{2})\s{0,1}-\s{0,1}(?P<end>\d{2}\.\d{2})").unwrap();
     }
@@ -150,25 +150,25 @@ fn parse_times(raw: &String, year: i32) -> Result<Vec<(DateTime::<chrono_tz::Tz>
         let dt = append_zeros_in_timestamp(dt); 
         let captures = match DATETIME_RE.captures(&dt) {
             Some(caps) => caps,
-            None => return Err(PageParserError::new(format!("Could not parse timestamp: {}", dt)))?
+            None => return Err(Box::new(PageParserError::new(format!("Could not parse timestamp: {}", dt))))
         };
         let day = match captures.name("day") {
             Some(day) => day.as_str(),
-            None => return Err(PageParserError::new(format!("Missing day in timestamp: {}", dt)))?
+            None => return Err(Box::new(PageParserError::new(format!("Missing day in timestamp: {}", dt))))
         };
         let day = zero_pad_day_number(day);
         let month = match captures.name("month") {
             Some(month) => month.as_str(),
-            None => return Err(PageParserError::new(format!("Missing month in timestamp: {}", dt)))?
+            None => return Err(Box::new(PageParserError::new(format!("Missing month in timestamp: {}", dt))))
         };
         let month = month_to_english(month)?;
         let start_time = match captures.name("start") {
             Some(start) => start.as_str(),
-            None => return Err(PageParserError::new(format!("Missing start time in timestamp: {}", dt)))?
+            None => return Err(Box::new(PageParserError::new(format!("Missing start time in timestamp: {}", dt))))
         };
         let end_time = match captures.name("end") {
             Some(end) => end.as_str(),
-            None => return Err(PageParserError::new(format!("Missing end time in timestamp: {}", dt)))?
+            None => return Err(Box::new(PageParserError::new(format!("Missing end time in timestamp: {}", dt))))
         };
         let start = format!("{}-{}-{} {}", year, month, day, start_time);
         let end = format!("{}-{}-{} {}", year, month, day, end_time);
@@ -215,7 +215,7 @@ fn month_to_english(swe_month: &str) -> Result<String, PageParserError> {
         "oktober" => Ok(String::from("october")),
         "november" => Ok(swe_month.to_string()),
         "december" => Ok(swe_month.to_string()),
-        _ => return Err(PageParserError::new(format!("Invalid month name: {}", swe_month)))?
+        _ => return Err(PageParserError::new(format!("Invalid month name: {}", swe_month)))
     }
 }
 
@@ -272,7 +272,7 @@ mod tests {
 
     #[test]
     fn should_split_description_and_times_with_handled_bad_day_name() {
-        let (description, raw_times) = split_desc_and_times("på parkeringen kringlekullen. tisadg 1 september 18-18.45".to_string()).unwrap();
+        let (description, raw_times) = split_desc_and_times("på parkeringen kringlekullen. tisadg 1 september 18-18.45".to_owned()).unwrap();
         assert_eq!(true, description.is_some());
         assert_eq!("på parkeringen kringlekullen", description.unwrap());
         assert_eq!("tisadg 1 september 18-18.45", raw_times);
@@ -280,7 +280,7 @@ mod tests {
 
     #[test]
     fn should_error_on_unknown_bad_day_name() {
-        let result = split_desc_and_times("på parkeringen. tossdag 1 september 18-18.45 och torsdag 21 september 19-19.30".to_string());
+        let result = split_desc_and_times("på parkeringen. tossdag 1 september 18-18.45 och torsdag 21 september 19-19.30".to_owned());
         assert_eq!(true, result.is_err());
     }
 
@@ -303,24 +303,24 @@ mod tests {
     #[test]
     fn should_append_zeros_to_timestamp() {
         let raw = " torsdag 29 oktober 17-17.20";
-        assert_eq!("torsdag 29 oktober 17.00-17.20".to_string(), append_zeros_in_timestamp(&raw))
+        assert_eq!("torsdag 29 oktober 17.00-17.20".to_owned(), append_zeros_in_timestamp(&raw))
     }
 
     #[test]
     fn should_zero_pad_single_digit_day() {
         let raw = "1";
-        assert_eq!("01".to_string(), zero_pad_day_number(raw))
+        assert_eq!("01".to_owned(), zero_pad_day_number(raw))
     }
 
     #[test]
     fn should_not_zero_pad_double_digit_day() {
         let raw = "29";
-        assert_eq!("29".to_string(), zero_pad_day_number(raw))
+        assert_eq!("29".to_owned(), zero_pad_day_number(raw))
     }
 
     #[test]
     fn should_handle_month_misspellings() {
-        assert_eq!("september".to_string(), month_to_english(&"sepetmber".to_string()).unwrap());
+        assert_eq!("september".to_owned(), month_to_english(&"sepetmber".to_owned()).unwrap());
     }
 
     #[test]
@@ -328,7 +328,7 @@ mod tests {
         let raw = "Måndag 28 september 17-17.45";
         let time = parse_times(&raw.to_owned(), 2020 as i32).unwrap();
         assert_eq!(1, time.len());
-        assert_eq!("2020-09-28T17:00:00+02:00".to_string(), time.get(0).unwrap().0.to_rfc3339());
+        assert_eq!("2020-09-28T17:00:00+02:00".to_owned(), time.get(0).unwrap().0.to_rfc3339());
         assert_eq!("2020-09-28T17:45:00+02:00", time.get(0).unwrap().1.to_rfc3339());
     }
 
@@ -344,18 +344,18 @@ mod tests {
     #[test]
     fn should_parse_multiple_timestamps() {
         let raw = "Torsdag 17 september 17-17.20 och torsdag 20 oktober 17-17.20";
-        let times = parse_times(&raw.to_string(), 2020).unwrap();
+        let times = parse_times(&raw.to_owned(), 2020).unwrap();
         assert_eq!(2, times.len());
-        assert_eq!("2020-10-20T17:00:00+02:00".to_string(), times.get(1).unwrap().0.to_rfc3339());
-        assert_eq!("2020-10-20T17:20:00+02:00".to_string(), times.get(1).unwrap().1.to_rfc3339());
+        assert_eq!("2020-10-20T17:00:00+02:00".to_owned(), times.get(1).unwrap().0.to_rfc3339());
+        assert_eq!("2020-10-20T17:20:00+02:00".to_owned(), times.get(1).unwrap().1.to_rfc3339());
     }
 
     #[test]
     fn should_handle_timestamp_with_bad_spacing() {
         let raw = "tisdag 27 oktober 18.10- 18.30";
-        let times = parse_times(&raw.to_string(), 2020).unwrap();
-        assert_eq!("2020-10-27T18:10:00+01:00".to_string(), times.get(0).unwrap().0.to_rfc3339());
-        assert_eq!("2020-10-27T18:30:00+01:00".to_string(), times.get(0).unwrap().1.to_rfc3339());
+        let times = parse_times(&raw.to_owned(), 2020).unwrap();
+        assert_eq!("2020-10-27T18:10:00+01:00".to_owned(), times.get(0).unwrap().0.to_rfc3339());
+        assert_eq!("2020-10-27T18:30:00+01:00".to_owned(), times.get(0).unwrap().1.to_rfc3339());
     }
 
     #[test]

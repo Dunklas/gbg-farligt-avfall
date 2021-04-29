@@ -61,36 +61,36 @@ pub async fn store(table: String, region: Region, events: Vec::<PickUpEvent>) ->
     let write_requests: Vec<WriteRequest> = events.into_iter()
         .map(|event| {
             let mut attributes: HashMap<String, AttributeValue> = HashMap::new(); 
-            attributes.insert("event_date".to_string(), AttributeValue{
+            attributes.insert("event_date".to_owned(), AttributeValue{
                 s: Some(event.date),
                 ..Default::default()
             });
-            attributes.insert("location_id".to_string(), AttributeValue{
+            attributes.insert("location_id".to_owned(), AttributeValue{
                 s: Some(event.location_id),
                 ..Default::default()
             });
-            attributes.insert("district".to_string(), AttributeValue{
+            attributes.insert("district".to_owned(), AttributeValue{
                 s: Some(event.district),
                 ..Default::default()
             });
-            attributes.insert("street".to_string(), AttributeValue{
+            attributes.insert("street".to_owned(), AttributeValue{
                 s: Some(event.street),
                 ..Default::default()
             });
             match event.description.is_some() {
                 true => {
-                    attributes.insert("description".to_string(), AttributeValue{
+                    attributes.insert("description".to_owned(), AttributeValue{
                         s: Some(event.description.unwrap()),
                         ..Default::default()
                     });
                 },
                 _ => {}
             }
-            attributes.insert("start_time".to_string(), AttributeValue{
+            attributes.insert("start_time".to_owned(), AttributeValue{
                 s: Some(event.time_start),
                 ..Default::default()
             });
-            attributes.insert("end_time".to_string(), AttributeValue{
+            attributes.insert("end_time".to_owned(), AttributeValue{
                 s: Some(event.time_end),
                 ..Default::default()
             });
