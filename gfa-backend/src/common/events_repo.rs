@@ -37,7 +37,7 @@ pub async fn get_by_date(table: String, region: Region, date: String) -> Result<
         })
         .await?
         .items
-        .unwrap_or_else(|| vec![])
+        .unwrap_or_else(Vec::new)
         .into_iter()
         .map(|item| {
             PickUpEvent::new_with_id(

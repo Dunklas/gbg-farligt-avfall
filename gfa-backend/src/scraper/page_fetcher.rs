@@ -78,11 +78,11 @@ async fn fetch_page(client: &Client, url: String) -> Result<Vec<u8>, PageFetcher
     Ok(Vec::from(body))
 }
 
-fn find_total_items(page: &Vec<u8>) -> Result<u16, PageFetcherError> {
+fn find_total_items(page: &[u8]) -> Result<u16, PageFetcherError> {
     lazy_static! {
         static ref TOTAL_RE: Regex = Regex::new(r".*Hittade\s+(\d+)").unwrap();
     }
-    let doc = match document::Document::from_read(page.as_slice()) {
+    let doc = match document::Document::from_read(page) {
         Ok(doc) => doc,
         Err(_e) => return Err(PageFetcherError{
             message: "Could not parse page".to_owned()
