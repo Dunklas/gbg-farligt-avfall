@@ -83,7 +83,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Verify cache
-        run: (cd gfa-backend && du -sh *)
+        run: (cd gfa-backend && du -sh target)
       - name: Build
         run: (cd gfa-backend && cargo build --release --target x86_64-unknown-linux-musl)
       - name: Upload artifacts
