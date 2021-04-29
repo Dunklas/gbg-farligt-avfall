@@ -84,7 +84,8 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Build
         run: |
-          cd gfa-backend && cargo build --release --target x86_64-unknown-linux-musl
+          (cd gfa-backend && du -sh *)
+          (cd gfa-backend && cargo build --release --target x86_64-unknown-linux-musl)
       - name: Upload artifacts
         run: |
           for executable in ${{ env.EXECUTABLES }};
