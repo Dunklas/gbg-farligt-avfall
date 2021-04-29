@@ -80,6 +80,8 @@ jobs:
         with:
           path: gfa-backend/target
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
       - name: Build
         run: |
           cd gfa-backend && cargo build --release --target x86_64-unknown-linux-musl
