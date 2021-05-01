@@ -9,25 +9,25 @@ import { ApiGatewayv2DomainProperties } from '@aws-cdk/aws-route53-targets';
 export class ApiStack extends NestedStack {
 
     public readonly api: HttpApi;
-    public readonly externalUrl?: string;
+    public readonly externalDomain: string;
 
     constructor(scope: Construct, id: string) {
         super(scope, id);
 
         const hostedZoneId = scope.node.tryGetContext('hostedZoneId');
         const domainName = scope.node.tryGetContext('domainName');
-        const apiDomainName = `gfa-api.${domainName}`;
+        this.externalDomain = `gfa-api.${domainName}`;
 
         const hostedZone = HostedZone.fromHostedZoneAttributes(this, 'e-hostedzone', {
             hostedZoneId: hostedZoneId,
             zoneName: domainName,
         });
         const apiCert = new Certificate(this, 'api-certificate', {
-            domainName: apiDomainName,
+            domainName: this.externalDomain,
             validation: CertificateValidation.fromDns(hostedZone),
         });
         const customDomainName = new DomainName(this, 'domain-name', {
-            domainName: apiDomainName,
+            domainName: this.externalDomain,
             certificate: apiCert,
         });
         this.api = new HttpApi(this, 'apiv2', {
@@ -42,7 +42,7 @@ export class ApiStack extends NestedStack {
         });
         new ARecord(this, 'api-domain-record', {
             zone: hostedZone,
-            recordName: apiDomainName,
+            recordName: this.externalDomain,
             target: RecordTarget.fromAlias(new ApiGatewayv2DomainProperties(
                 customDomainName.regionalDomainName,
                 customDomainName.regionalHostedZoneId,
