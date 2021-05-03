@@ -1,38 +1,31 @@
 .stop {
   width: 100%;
-  margin-top: 16px;
-  padding: 0 5px;
-  background-color: white;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding: 14px;
+  color: #ebdbb2;
   border-radius: 5px;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.stop .content h1 {
-  font-size: 1rem;
-  margin-bottom: 2px;
-}
-.stop .content p {
-  margin-top: 2px;
-  font-size: 0.75rem;
-}
-
-.stop .icon {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 8px;
-}
-.stop .icon svg {
-  height: 20px;
-  width: 20px;
-  fill: #444;
-}
-
-.stop .icon svg:hover {
-  fill: #222;
+.stop:hover {
+  background-color: #504945;
   cursor: pointer;
+}
+
+.stop .primary h1 {
+  font-size: 2rem;
+  padding-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stop .primary p {
+  display: block;
+  font-size: 1rem;
+}
+
+.stop .meta div {
+  font-size: 0.9rem;
+  padding-left: 10px;
 }
