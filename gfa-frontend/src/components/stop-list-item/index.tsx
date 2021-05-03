@@ -1,4 +1,5 @@
 import { h, FunctionalComponent } from 'preact';
+import { route } from 'preact-router';
 import { Stop } from '../../types/Stop';
 import * as style from './style.css';
 
@@ -14,7 +15,10 @@ export const StopListItem: FunctionalComponent<StopListItemProps> = ({
   stop
 }) => {
   return (
-    <div className={style.stop}>
+    <div
+      className={style.stop}
+      onClick={() => route(`/details/${stop.location_id}`)}
+    >
       <div className={style.primary}>
         <h1>{stop.street}</h1>
         <p>{stop.description && capitalizeFirstLetter(stop.description)}</p>
