@@ -1,0 +1,15 @@
+.main {
+  min-height: 100%;
+  width: 100%;
+}
+
+.details {
+  color: #eff4f6;
+}
+
+.details h1 {
+  width: 100%;
+  padding: 64px;
+  background-color: #082456;
+  font-size: 2.5rem;
+}

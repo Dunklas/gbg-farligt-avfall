@@ -21,7 +21,6 @@ export const StopListItem: FunctionalComponent<StopListItemProps> = ({
     >
       <div className={style.primary}>
         <h1>{stop.street}</h1>
-        <p>{stop.description && capitalizeFirstLetter(stop.description)}</p>
       </div>
       <div className={style.meta}>
         <div>{stop.district}</div>

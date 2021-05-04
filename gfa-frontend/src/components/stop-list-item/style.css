@@ -1,31 +1,29 @@
 .stop {
   width: 100%;
-  padding: 14px;
-  color: #ebdbb2;
   border-radius: 5px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  padding: 14px;
 }
 
 .stop:hover {
-  background-color: #504945;
+  color: #082456;
   cursor: pointer;
 }
 
-.stop .primary h1 {
-  font-size: 2rem;
+.stop .primary {
+  font-size: 1.2em;
   padding-bottom: 6px;
+  flex-shrink: 2;
+  white-space: normal;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.stop .primary p {
-  display: block;
-  font-size: 1rem;
+  word-wrap: break-word;
 }
 
 .stop .meta div {
   font-size: 0.9rem;
-  padding-left: 10px;
+  white-space: nowrap;
 }

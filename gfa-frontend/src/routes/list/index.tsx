@@ -9,7 +9,8 @@ const List: FunctionalComponent<{}> = () => {
 
   return (
     <div className={style.main}>
-      <div>
+      <div className={style.intro}>Some kind of menu here</div>
+      <div className={style.list}>
         {stops.map(stop => (
           <StopListItem stop={stop} key={stop.location_id} />
         ))}
