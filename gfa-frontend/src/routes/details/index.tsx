@@ -21,7 +21,12 @@ const Details: FunctionalComponent<DetailsProps> = props => {
       <div className={style.details}>
         {stop?.description && <p>{capitalizeFirstLetter(stop.description)}.</p>}
       </div>
-      <div className={style.subscribe}></div>
+      <div className={style.subscribe}>
+        <form>
+          <input type="email" />
+          <button>Subscribe!</button>
+        </form>
+      </div>
     </div>
   );
 };
