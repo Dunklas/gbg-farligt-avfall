@@ -13,7 +13,15 @@
 
 .intro {
   width: 100%;
-  padding: 128px;
   color: #eff4f6;
   background-color: #082456;
+  padding: 32px 16px;
+}
+
+.intro h1 {
+  font-size: 2em;
+  padding: 8px 0px;
+}
+.intro p {
+  padding: 4px 0px;
 }

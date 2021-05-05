@@ -1,15 +1,21 @@
 .main {
   min-height: 100%;
   width: 100%;
+  overflow-wrap: break-word;
 }
 
-.details {
-  color: #eff4f6;
-}
-
-.details h1 {
+.top {
   width: 100%;
-  padding: 64px;
+  padding: 64px 16px;
   background-color: #082456;
-  font-size: 2.5rem;
+  color: #eff4f6;
+  font-size: 2.5em;
+}
+
+.details p {
+  padding: 16px;
+  font-size: 1.6em;
+}
+
+.subscribe {
 }

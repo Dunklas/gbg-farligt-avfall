@@ -1,11 +1,10 @@
 .stop {
   width: 100%;
-  border-radius: 5px;
+  min-width: 100%;
+  height: 56px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
-  padding: 14px;
 }
 
 .stop:hover {
@@ -15,15 +14,9 @@
 
 .stop .primary {
   font-size: 1.2em;
-  padding-bottom: 6px;
-  flex-shrink: 2;
-  white-space: normal;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-wrap: break-word;
 }
 
-.stop .meta div {
-  font-size: 0.9rem;
-  white-space: nowrap;
+.stop .meta {
+  margin-left: auto;
+  font-size: 0.8rem;
 }

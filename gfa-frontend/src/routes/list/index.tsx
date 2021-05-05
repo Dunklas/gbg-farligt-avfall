@@ -9,7 +9,18 @@ const List: FunctionalComponent<{}> = () => {
 
   return (
     <div className={style.main}>
-      <div className={style.intro}>Some kind of menu here</div>
+      <div className={style.intro}>
+        <h1>Greetings!</h1>
+        <p>
+          Here you can subscribe to receiving e-mail notifications when the
+          Göteborg Farligt Avfall truck is about to arrive.
+        </p>
+        <p>Click on one of the locations below to subscribe.</p>
+        <p>
+          Note that the notifications are provided as a best effort, and that we
+          are in no way affiliated with Göteborg stad.
+        </p>
+      </div>
       <div className={style.list}>
         {stops.map(stop => (
           <StopListItem stop={stop} key={stop.location_id} />
