@@ -4,6 +4,8 @@ declare namespace StyleCssNamespace {
     details: string;
     error: string;
     instructions: string;
+    load3: string;
+    loader: string;
     main: string;
     top: string;
   }

@@ -41,6 +41,7 @@ const Details: FunctionalComponent<DetailsProps> = props => {
   const [email, setEmail] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [hasSubscribed, setHasSubscribed] = useState<boolean>(false);
 
   return (
     <div className={style.main}>
@@ -67,10 +68,14 @@ const Details: FunctionalComponent<DetailsProps> = props => {
         <button
           onClick={(event): void => {
             event.preventDefault();
+            if (hasSubscribed || loading) {
+              return;
+            }
             setLoading(true);
             handleSubscribe(locationId, email)
               .then(() => {
                 setLoading(false);
+                setHasSubscribed(true);
               })
               .catch(error => {
                 setLoading(false);
@@ -78,7 +83,9 @@ const Details: FunctionalComponent<DetailsProps> = props => {
               });
           }}
         >
-          Subscribe!
+          {!hasSubscribed && !loading && <div>Subscribe!</div>}
+          {hasSubscribed && !loading && <div>✓</div>}
+          {loading && <div className={style.loader} />}
         </button>
       </form>
       {error && <div className={style.error}>{error}</div>}
