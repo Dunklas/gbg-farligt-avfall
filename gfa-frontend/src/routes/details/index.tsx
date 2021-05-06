@@ -81,6 +81,7 @@ const Details: FunctionalComponent<DetailsProps> = props => {
           Subscribe!
         </button>
       </form>
+      {error && <div className={style.error}>{error}</div>}
     </div>
   );
 };

@@ -13,11 +13,11 @@
 }
 
 .details p {
-  padding: 16px;
+  padding: 16px 0px 8px 16px;
   font-size: 1.6em;
 }
 .instructions p {
-  padding: 0px 16px;
+  padding: 8px 16px;
   font-size: 1.2em;
 }
 
@@ -27,7 +27,7 @@ form {
   align-items: center;
   width: 100%;
   max-width: 500px;
-  padding: 16px;
+  padding: 8px 16px;
 }
 
 form input {
@@ -54,4 +54,9 @@ form button {
 
 form button:hover {
   cursor: pointer;
+}
+
+.error {
+  padding-left: 16px;
+  color: red;
 }
