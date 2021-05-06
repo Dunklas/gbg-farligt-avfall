@@ -2,8 +2,8 @@
 declare namespace StyleCssNamespace {
   export interface IStyleCss {
     details: string;
+    instructions: string;
     main: string;
-    subscribe: string;
     top: string;
   }
 }

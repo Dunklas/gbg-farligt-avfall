@@ -12,8 +12,8 @@ const List: FunctionalComponent<{}> = () => {
       <div className={style.intro}>
         <h1>Greetings!</h1>
         <p>
-          Here you can subscribe to receiving e-mail notifications when the
-          Göteborg Farligt Avfall truck is about to arrive.
+          Here you can subscribe to e-mail notifications when the Göteborg
+          Farligt Avfall truck is about to arrive.
         </p>
         <p>Click on one of the locations below to subscribe.</p>
         <p>
