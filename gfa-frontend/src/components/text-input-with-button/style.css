@@ -7,7 +7,7 @@ form {
 form input {
   vertical-align: top;
   align-self: stretch;
-  width: 70%;
+  width: 65%;
   height: 55px;
   padding: 0 8px;
   font-size: 1.2rem;
@@ -20,7 +20,7 @@ form button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30%;
+  width: 35%;
   height: 55px;
   font-size: 1.2rem;
   color: #eff4f6;
