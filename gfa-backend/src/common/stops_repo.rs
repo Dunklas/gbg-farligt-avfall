@@ -46,6 +46,6 @@ fn item_to_stop(item: &HashMap<String, AttributeValue>) -> Option<PickUpStop> {
         location_id: location_id.clone(),
         street: street.clone(),
         district: district.clone(),
-        description: description,
+        description,
     })
 }
