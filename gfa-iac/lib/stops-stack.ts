@@ -17,8 +17,8 @@ export class StopsStack extends NestedStack {
         const getStops = new GfaFunction(this, 'get-stops', {
             name: 'get-stops',
             environment: {
-                EVENTS_TABLE_NAME: props.eventsTable.tableName,
-                EVENTS_LOCATION_INDEX: props.locationIndex,
+                EVENTS_TABLE: props.eventsTable.tableName,
+                LOCATION_INDEX: props.locationIndex,
             }
         });
         props.eventsTable.grantReadData(getStops.handler);
