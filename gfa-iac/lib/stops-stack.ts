@@ -5,8 +5,6 @@ import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import { GfaFunction } from './function/gfa-function';
 
 export interface StopsStackProps {
-    stopsBucket: IBucket,
-    stopsPath: string,
     api: HttpApi,
 }
 
@@ -17,11 +15,10 @@ export class StopsStack extends NestedStack {
         const getStops = new GfaFunction(this, 'get-stops', {
             name: 'get-stops',
             environment: {
-                STOPS_BUCKET: props.stopsBucket.bucketName,
-                STOPS_PATH: props.stopsPath,
+                // TODO: Pass table and index name
             }
         });
-        props.stopsBucket.grantRead(getStops.handler, props.stopsPath);
+        // TODO: Grant access to events table/index
 
         props.api.addRoutes({
             path: '/stops',

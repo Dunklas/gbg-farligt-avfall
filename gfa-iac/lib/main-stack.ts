@@ -1,5 +1,5 @@
 import { App, CfnOutput, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
-import { Table, AttributeType, BillingMode } from '@aws-cdk/aws-dynamodb';
+import { Table, AttributeType, BillingMode, ProjectionType } from '@aws-cdk/aws-dynamodb';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
 import { EmailSubscription} from '@aws-cdk/aws-sns-subscriptions';
@@ -26,10 +26,18 @@ export class GbgFarligtAvfallStack extends Stack {
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY
     });
-
-    const stopsS3Path = 'stops.json';
-    const stopsBucket = new Bucket(this, 'stops-bucket', {
-      removalPolicy: RemovalPolicy.DESTROY
+    eventsDb.addGlobalSecondaryIndex({
+      indexName: 'byLocation',
+      partitionKey: {
+        name: 'location_id',
+        type: AttributeType.STRING,
+      },
+      projectionType: ProjectionType.INCLUDE,
+      nonKeyAttributes: [
+        'street',
+        'district',
+        'description',
+      ],
     });
 
     const webStack = new WebStack(this, 'web-stack', {
@@ -44,16 +52,12 @@ export class GbgFarligtAvfallStack extends Stack {
     }
 
     new IngestionStack(this, 'ingestion-stack', {
-      stopsBucket: stopsBucket,
-      stopsPath: stopsS3Path,
       eventsTable: eventsDb,
       alertTopic,
     });
 
     new StopsStack(this, 'stops-stack', {
       api: apiStack.api,
-      stopsBucket: stopsBucket,
-      stopsPath: stopsS3Path
     })
 
     const domainName = app.node.tryGetContext('domainName');
