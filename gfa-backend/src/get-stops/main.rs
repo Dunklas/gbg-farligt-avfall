@@ -57,7 +57,7 @@ async fn handle_request(_event: Value, _: Context) -> Result<ApiGatewayV2httpRes
 
 fn create_response(body: String, status_code: i64) -> ApiGatewayV2httpResponse {
     ApiGatewayV2httpResponse {
-        status_code: status_code,
+        status_code,
         headers: HashMap::new(),
         multi_value_headers: HashMap::new(),
         body: Some(body),
