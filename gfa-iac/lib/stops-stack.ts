@@ -1,11 +1,13 @@
 import { Construct, NestedStack } from "@aws-cdk/core";
-import { IBucket } from '@aws-cdk/aws-s3';
 import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
 import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import { GfaFunction } from './function/gfa-function';
+import { ITable } from "@aws-cdk/aws-dynamodb";
 
 export interface StopsStackProps {
     api: HttpApi,
+    eventsTable: ITable,
+    locationIndex: string,
 }
 
 export class StopsStack extends NestedStack {
@@ -15,10 +17,11 @@ export class StopsStack extends NestedStack {
         const getStops = new GfaFunction(this, 'get-stops', {
             name: 'get-stops',
             environment: {
-                // TODO: Pass table and index name
+                EVENTS_TABLE_NAME: props.eventsTable.tableName,
+                EVENTS_LOCATION_INDEX: props.locationIndex,
             }
         });
-        // TODO: Grant access to events table/index
+        props.eventsTable.grantReadData(getStops.handler);
 
         props.api.addRoutes({
             path: '/stops',
