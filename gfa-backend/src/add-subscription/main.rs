@@ -63,7 +63,7 @@ async fn handle_request(
         Ok(optional_stop) => match optional_stop {
             Some(stop) => stop,
             None => {
-                return Ok(create_response(400, format!("Location {} does not exist", request.location_id)));
+                return Ok(create_response(400, format!("Location does not exist: {}", request.location_id)));
             }
         },
         Err(error) => {
