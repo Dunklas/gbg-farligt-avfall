@@ -53,6 +53,12 @@ pub async fn store_subscription(table: &str, region: &Region, subscription: &Sub
             ..Default::default()
         });
     }
+    if subscription.unsubscribe_token.is_some() {
+        attributes.insert("unsubscribe_token".to_owned(), AttributeValue{
+            s: Some(subscription.unsubscribe_token.as_ref().unwrap().clone()),
+            ..Default::default()
+        });
+    }
     attributes.insert("is_authenticated".to_owned(), AttributeValue{
         bool: Some(subscription.is_authenticated),
         ..Default::default()
@@ -229,6 +235,10 @@ fn item_to_subscription(item: &HashMap<String, AttributeValue>) -> Option<Subscr
         None => None,
         Some(auth_token) => Some(auth_token.s.as_ref()?.clone())
     };
+    let unsubscribe_token = match item.get("unsubscribe_token") {
+        None => None,
+        Some(unsubscribe_token) => Some(unsubscribe_token.s.as_ref()?.clone())
+    };
     let ttl = match item.get("ttl") {
         None => None,
         Some(ttl) => Some(ttl.n.as_ref()?.parse::<i64>().ok()?)
@@ -237,6 +247,7 @@ fn item_to_subscription(item: &HashMap<String, AttributeValue>) -> Option<Subscr
         email: email.clone(),
         location_id: location_id.clone(),
         auth_token,
+        unsubscribe_token,
         is_authenticated: *is_authenticated,
         ttl,
     })
