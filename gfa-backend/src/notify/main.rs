@@ -1,5 +1,4 @@
 use std::{env, fmt, error, str::FromStr};
-use std::collections::HashMap;
 use lambda::{handler_fn, Context};
 use serde_json::{json, Value};
 use simple_logger::{SimpleLogger};
