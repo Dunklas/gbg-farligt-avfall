@@ -59,11 +59,26 @@ export class SubscriptionStack extends NestedStack {
         });
         this.subscriptionsDb.grantReadWriteData(verifySubscription.handler);
 
+        const removeSubscription = new GfaFunction(this, 'removeSubscription', {
+            name: 'remove-subscription',
+            environment: {
+                SUBSCRIPTIONS_TABLE: this.subscriptionsDb.tableName,
+            },
+        });
+        this.subscriptionsDb.grantReadWriteData(removeSubscription.handler);
+
         props.api.addRoutes({
             path: '/subscriptions',
             methods: [ HttpMethod.PUT ],
             integration: new LambdaProxyIntegration({
                 handler: addSubscription.handler,
+            }),
+        });
+        props.api.addRoutes({
+            path: '/subscriptions',
+            methods: [ HttpMethod.DELETE ],
+            integration: new LambdaProxyIntegration({
+                handler: removeSubscription.handler,
             }),
         });
         props.api.addRoutes({
