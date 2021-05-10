@@ -38,6 +38,7 @@ async fn handle_request(_event: Value, _: Context) -> Result<Value, Error> {
     let subscriptions_table = env::var("SUBSCRIPTIONS_TABLE").unwrap();
     let api_key = env::var("SENDGRID_API_KEY").unwrap();
     let email_domain = env::var("EMAIL_DOMAIN").unwrap();
+    let unsubscribe_url = env::var("UNSUBSCRIBE_URL").unwrap();
     let region = env::var("AWS_REGION").unwrap();
     let region = Region::from_str(&region).unwrap(); 
 
@@ -75,7 +76,18 @@ async fn handle_request(_event: Value, _: Context) -> Result<Value, Error> {
             recipients: subscriptions.iter()
                 .map(|subscription| Recipient{
                     email: subscription.email.clone(),
-                    substitutions: HashMap::new()
+                    substitutions: [
+                        ("-unsubscribeUrl-".to_owned(), format!("{}?email={}&unsubscribe_token={}",
+                            unsubscribe_url,
+                            subscription.email.clone(),
+                            match subscription.unsubscribe_token.as_ref() {
+                                Some(unsubscribe_token) => unsubscribe_token.clone(),
+                                None => "MISSING-TOKEN".to_owned() // TODO: Decide on what action to take here
+                            }))
+                    ]
+                    .iter()
+                    .cloned()
+                    .collect()
                 })
                 .collect(),
             html_content,
