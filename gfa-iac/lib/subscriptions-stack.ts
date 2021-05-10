@@ -32,6 +32,10 @@ export class SubscriptionStack extends NestedStack {
             partitionKey: { name: 'auth_token', type: AttributeType.STRING }
         });
         this.subscriptionsDb.addGlobalSecondaryIndex({
+            indexName: 'byUnsubscribeToken',
+            partitionKey: { name: 'unsubscribe_token', type: AttributeType.STRING }
+        })
+        this.subscriptionsDb.addGlobalSecondaryIndex({
             indexName: 'byLocationId',
             partitionKey: { name: 'location_id', type: AttributeType.STRING },
             sortKey: { name: 'email', type: AttributeType.STRING },
