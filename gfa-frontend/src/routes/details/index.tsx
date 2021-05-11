@@ -69,6 +69,7 @@ const Details: FunctionalComponent<DetailsProps> = props => {
           handleSubscribe(locationId, email)
             .then(() => {
               setLoading(false);
+              setError('');
               setHasSubscribed(true);
             })
             .catch(error => {
