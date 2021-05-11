@@ -79,6 +79,11 @@ const Details: FunctionalComponent<DetailsProps> = props => {
         placeholder="someone@somewhere.com"
         type="email"
       />
+      <div className={style.feedback}>
+        {hasSubscribed && (
+          <p>Great! Please check your inbox to confirm your subscription.</p>
+        )}
+      </div>
     </div>
   );
 };
