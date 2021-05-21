@@ -18,7 +18,7 @@ jobs:
   quote:
     runs-on: ubuntu-latest
     steps:
-    - uses: Dunklas/pr-quote-action@v0.1
+    - uses: Dunklas/pr-quote-action@v0.2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
