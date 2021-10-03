@@ -124,7 +124,7 @@ fn split_desc_and_times(raw: String) -> Result<(Option<String>, String), PagePar
     lazy_static! {
         // Should match either "vid ica gunnilse och återvinningsstationen. onsdag 16 september 17.35-17.55" or "onsdag 16 september 17.35-17.55"
         // Index of second group indicates where to split description and time data.
-        static ref DESC_TIMES_RE: Regex = Regex::new(r"([\w\s\-\(\)]+\. |^)(måndag|tisdag|tisadg|onsdag|torsdag|fredag|lördag|söndag)").unwrap();
+        static ref DESC_TIMES_RE: Regex = Regex::new(r"([\w\s\-\(\)]+\. |^)(måndag|tisdag|tisadg|onsdag|onsadg|torsdag|fredag|lördag|söndag)").unwrap();
     }
     let raw = raw.trim().to_lowercase();
     let captures = match DESC_TIMES_RE.captures(&raw) {
@@ -273,11 +273,19 @@ mod tests {
     }
 
     #[test]
-    fn should_split_description_and_times_with_handled_bad_day_name() {
+    fn should_split_description_and_times_with_tisdag_misspelled() {
         let (description, raw_times) = split_desc_and_times("på parkeringen kringlekullen. tisadg 1 september 18-18.45".to_owned()).unwrap();
         assert_eq!(true, description.is_some());
         assert_eq!("på parkeringen kringlekullen", description.unwrap());
         assert_eq!("tisadg 1 september 18-18.45", raw_times);
+    }
+
+    #[test]
+    fn should_split_description_and_times_with_onsdag_misspelled() {
+        let (description, raw_times) = split_desc_and_times("vid återvinningsstationen. onsadg 22 september, 18.45-19.05, och onsdag 3 november, 18.45-19.05".to_owned()).unwrap();
+        assert_eq!(true, description.is_some());
+        assert_eq!("vid återvinningsstationen", description.unwrap());
+        assert_eq!("onsadg 22 september, 18.45-19.05, och onsdag 3 november, 18.45-19.05", raw_times);
     }
 
     #[test]
