@@ -145,7 +145,7 @@ fn split_desc_and_times(raw: String) -> Result<(Option<String>, String), PagePar
 
 fn parse_times(raw: &str, year: i32) -> Result<Vec<StartAndEndTime>, Box<dyn Error>> {
     lazy_static! {
-        static ref DATETIME_RE: Regex = Regex::new(r"\w+ (?P<day>\d{1,2}) (?P<month>\w+) (?P<start>\d{2}\.\d{2})\s{0,1}-\s{0,1}(?P<end>\d{2}\.\d{2})").unwrap();
+        static ref DATETIME_RE: Regex = Regex::new(r"\w+ (?P<day>\d{1,2}) (?P<month>\w+)[,\s]\s*(?P<start>\d{2}\.\d{2})\s{0,1}-\s{0,1}(?P<end>\d{2}\.\d{2})").unwrap();
     }
     let mut datetimes: Vec::<(DateTime::<chrono_tz::Tz>, DateTime<chrono_tz::Tz>)> = Vec::new();
     for dt in raw.split_terminator("och") {
@@ -332,6 +332,15 @@ mod tests {
         assert_eq!(1, time.len());
         assert_eq!("2020-09-28T17:00:00+02:00".to_owned(), time.get(0).unwrap().0.to_rfc3339());
         assert_eq!("2020-09-28T17:45:00+02:00", time.get(0).unwrap().1.to_rfc3339());
+    }
+
+    #[test]
+    fn should_handle_daytime_comma_separator() {
+        let raw = "torsdag 23 september, 17.00-17.20";
+        let time = parse_times(&raw.to_owned(), 2021 as i32).unwrap();
+        assert_eq!(1, time.len());
+        assert_eq!("2021-09-23T17:00:00+02:00".to_owned(), time.get(0).unwrap().0.to_rfc3339());
+        assert_eq!("2021-09-23T17:20:00+02:00".to_owned(), time.get(0).unwrap().1.to_rfc3339());
     }
 
     #[test]
